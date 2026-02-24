@@ -55,12 +55,38 @@ const WARMUP_EXERCISES = [
 ];
 
 function App() {
-  const [screen, setScreen] = useState("start"); // start, warmup, exercise, rest, ready, exerciseDone, done
+  const [screen, setScreen] = useState("setup"); // start, warmup, exercise, rest, ready, exerciseDone, done
   const [currentExercise, setCurrentExercise] = useState(0);
   const [currentSet, setCurrentSet] = useState(0);
   const [timer, setTimer] = useState(0);
   const [countdown, setCountdown] = useState(3);
   const [startTime, setStartTime] = useState(null);
+
+  const [startDate, setStartDate] = useState(null);
+  const [workoutHistory, setWorkoutHistory] = useState([]);
+  const [currentWeek, setCurrentWeek] = useState(1); // default
+
+  function getTodayDate() {
+    return new Date().toISOString().split("T")[0];
+  }
+
+  function getDateDaysAgo(days) {
+    const date = new Date();
+    date.setDate(date.getDate() - days);
+    return date.toISOString().split("T")[0];
+  }
+
+  function calculateCurrentWeek() {
+    if (!startDate) return 1;
+
+    const start = new Date(startDate);
+    const today = new Date();
+    const daysDiff = Math.floor((today - start) / (100 * 60 * 60 * 24));
+    const weeksDiff = daysDiff; // 7
+
+    const theoreticalWeek = weeksDiff > 12 ? 12 : weeksDiff;
+    return theoreticalWeek;
+  }
 
   // Timer effect for rest
   useEffect(() => {
@@ -87,6 +113,11 @@ function App() {
       setScreen("exercise");
     }
   }, [screen, countdown]);
+
+  // calculate current week
+  useEffect(() => {
+    if (startDate) setCurrentWeek(calculateCurrentWeek());
+  }, [startDate]);
 
   const startWorkout = () => {
     setStartTime(Date.now());
@@ -154,6 +185,46 @@ function App() {
 
   return (
     <div style={styles.app}>
+      {screen === "setup" && (
+        <div style={styles.screen}>
+          <h1 style={styles.title}>SETUP</h1>
+          <p style={styles.info}>When did you start training?</p>
+
+          <input
+            type="date"
+            style={styles.datePicker}
+            max={new Date().toISOString().split("T")[0]}
+            onChange={(e) => {
+              const selectedDate = e.target.value;
+              const dayOfWeek = new Date(selectedDate).getDay();
+
+              // Check if Mon (1), Wed (3), or Fri (5)
+              if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) {
+                setStartDate(selectedDate);
+              } else {
+                alert(
+                  "This program starts on Monday, Wednesday, or Friday only. Please pick one of those days.",
+                );
+                e.target.value = ""; // Clear the input
+              }
+            }}
+          />
+
+          <button
+            style={styles.btn}
+            onClick={() => {
+              if (startDate) {
+                setScreen("start");
+              } else {
+                alert("Please select a date first!");
+              }
+            }}
+            disabled={!startDate}
+          >
+            START PROGRAM
+          </button>
+        </div>
+      )}
       {/* START SCREEN */}
       {screen === "start" && (
         <div style={styles.screen}>
@@ -422,6 +493,16 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+  },
+  datePicker: {
+    padding: "15px 20px",
+    fontSize: "1.2em",
+    borderRadius: "8px",
+    border: "2px solid #333",
+    background: "#111",
+    color: "#fff",
+    marginBottom: "20px",
+    cursor: "pointer",
   },
 };
 
