@@ -81,10 +81,11 @@ function App() {
 
     const start = new Date(startDate);
     const today = new Date();
-    const daysDiff = Math.floor((today - start) / (100 * 60 * 60 * 24));
-    const weeksDiff = daysDiff; // 7
+    const daysDiff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+    const weeksPassed = Math.floor(daysDiff / 7);
 
-    const theoreticalWeek = weeksDiff > 12 ? 12 : weeksDiff;
+    const theoreticalWeek = Math.min(weeksPassed + 1, 12);
+
     return theoreticalWeek;
   }
 
@@ -116,8 +117,31 @@ function App() {
 
   // calculate current week
   useEffect(() => {
-    if (startDate) setCurrentWeek(calculateCurrentWeek());
+    if (startDate) {
+      setCurrentWeek(calculateCurrentWeek());
+    }
   }, [startDate]);
+
+  // Load data on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("workoutData");
+    if (saved) {
+      const data = JSON.parse(saved);
+      setStartDate(data.startDate);
+      setWorkoutHistory(data.workoutHistory);
+    }
+  }, []);
+
+  // Save data whenever it changes
+  useEffect(() => {
+    if (startDate) {
+      const data = {
+        startDate,
+        workoutHistory,
+      };
+      localStorage.setItem("workoutData", JSON.stringify(data));
+    }
+  }, [startDate, workoutHistory]);
 
   const startWorkout = () => {
     setStartTime(Date.now());
@@ -182,6 +206,21 @@ function App() {
   };
 
   const totalSets = EXERCISES.reduce((sum, ex) => sum + ex.sets, 0);
+
+  const finishWorkout = () => {
+    const newWorkout = {
+      date: new Date().toISOString().split("T")[0],
+      completed: true,
+      week: currentWeek,
+      exercisesDone: EXERCISES.length,
+      duration: getDuration(),
+    };
+    setWorkoutHistory([...workoutHistory, newWorkout]);
+    setScreen("start");
+    setCurrentExercise(0);
+    setCurrentSet(0);
+    setTimer(0);
+  };
 
   return (
     <div style={styles.app}>
@@ -354,7 +393,7 @@ function App() {
               Total Sets: {totalSets}
             </div>
           </div>
-          <button style={styles.btn} onClick={restart}>
+          <button style={styles.btn} onClick={finishWorkout}>
             FINISH
           </button>
         </div>
