@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 // Workout data
-const EXERCISES = [
+const EXERCISES_W1_W4 = [
   {
     name: "PUSH-UPS",
     sets: 3,
@@ -46,6 +46,79 @@ const EXERCISES = [
   },
 ];
 
+const EXERCISES_W5_W8 = [
+  {
+    name: "PUSH-UPS",
+    sets: 3,
+    reps: "8-12",
+    rest: 90,
+    notes: "Do regular push-ups if you can, not on knees",
+  },
+  {
+    name: "GOBLET SQUATS",
+    sets: 3,
+    rest: 75,
+    reps: "10-12",
+    notes: "Fill up backpack, 2-5kg load, chest up",
+  },
+  {
+    name: "INVERTED ROWS",
+    sets: 3,
+    reps: "8-12",
+    rest: 90,
+    notes: "feet elevated on chair if too ez",
+  },
+  {
+    name: "SINGLE-LEG GLUTES BRIDGES",
+    sets: 3,
+    reps: "8-10",
+    rest: 60,
+    notes: "Harder variation for glutes/hamstrings",
+  },
+  {
+    name: "SIDE PLANK",
+    sets: 3,
+    reps: "20-30s per side",
+    rest: 60,
+    notes: "Build oblique strength",
+  },
+  {
+    name: "SUPERHUMAN HOLDS",
+    sets: 3,
+    reps: "15-20s",
+    rest: 60,
+    notes: "Lower back/posture strength",
+  },
+  {
+    name: "DEAD HANGS",
+    sets: 2,
+    reps: "20-30s",
+    rest: 60,
+    notes: "Grip + shoulder health",
+  },
+];
+
+const EXERCISES_W9_W12 = {
+  A: {},
+  B: {},
+};
+
+const COOLDOWNS = {
+  "Weeks 1-4": false,
+  "Weeks 5-8": [
+    "Child's pose - 30 seconds",
+    "Chest doorway stretch - 30 seconds each side",
+    "Hip flexor stretch - 30 seconds each leg",
+    "Seated hamstring stretch - 45 seconds",
+  ],
+  "Weeks 9-12": [
+    "Brisk walking - 20–30 minutes",
+    "Casual cycling - 20–30 minutes",
+    "Light jogging - 15–20 minutes (only if comfortable)",
+    "Jump rope - 5–10 minutes (build up gradually)",
+  ],
+};
+
 const WARMUP_EXERCISES = [
   "Jumping jacks - 30 seconds",
   "Arm circles - 20 each way",
@@ -89,6 +162,21 @@ function App() {
     return theoreticalWeek;
   }
 
+  function getCurrentExercises() {
+    if (currentWeek <= 4) return EXERCISES_W1_W4;
+    else if (currentExercise <= 8) return EXERCISES_W5_W8;
+    else {
+      const day = new Date().getDay();
+      if (day === 1 || day === 4) {
+        // Monday or Thursday
+        return EXERCISES_W9_W12["A"];
+      } else {
+        // Wednesday or Saturday
+        return EXERCISES_W9_W12["B"];
+      }
+    }
+  }
+
   // Timer effect for rest
   useEffect(() => {
     if (screen === "rest" && timer > 0) {
@@ -120,7 +208,7 @@ function App() {
       setCurrentWeek(calculateCurrentWeek());
       setScreen("start");
     } else {
-      setScreen('setup')
+      setScreen("setup");
     }
   }, [startDate]);
 
@@ -156,8 +244,9 @@ function App() {
     setScreen("exercise");
   };
 
+  const exercises = getCurrentExercises()
   const completeSet = () => {
-    const ex = EXERCISES[currentExercise];
+    const ex = exercises[currentExercise];
     if (currentSet < ex.sets - 1) {
       setTimer(ex.rest);
       setScreen("rest");
@@ -173,7 +262,7 @@ function App() {
   };
 
   const nextExercise = () => {
-    if (currentExercise < EXERCISES.length - 1) {
+    if (currentExercise < exercises.length - 1) {
       setCurrentExercise((prev) => prev + 1);
       setCurrentSet(0);
       setScreen("ready");
@@ -207,14 +296,14 @@ function App() {
     return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
-  const totalSets = EXERCISES.reduce((sum, ex) => sum + ex.sets, 0);
+  const totalSets = exercises.reduce((sum, ex) => sum + ex.sets, 0);
 
   const finishWorkout = () => {
     const newWorkout = {
       date: new Date().toISOString().split("T")[0],
       completed: true,
       week: currentWeek,
-      exercisesDone: EXERCISES.length,
+      exercisesDone: exercises.length,
       duration: getDuration(),
     };
     setWorkoutHistory([...workoutHistory, newWorkout]);
@@ -272,8 +361,8 @@ function App() {
           <h1 style={styles.title}>WORKOUT COACH</h1>
           <div style={styles.info}>Week {currentWeek} of 12</div>
           <div style={styles.exerciseList}>
-            <h2 style={styles.listTitle}>Week 1 - Foundation</h2>
-            {EXERCISES.map((ex, i) => (
+            <h2 style={styles.listTitle}>Week {currentWeek} - {currentWeek < 9 ? "Foundation" : "Building Strength"}</h2>
+            {exercises.map((ex, i) => (
               <div key={i} style={styles.exerciseItem}>
                 {i + 1}. {ex.name} - {ex.sets}×{ex.reps}
               </div>
@@ -306,8 +395,8 @@ function App() {
       {screen === "exercise" && (
         <div style={styles.screen}>
           <div style={styles.progress}>
-            Exercise {currentExercise + 1}/{EXERCISES.length} | Set{" "}
-            {currentSet + 1}/{EXERCISES[currentExercise].sets}
+            Exercise {currentExercise + 1}/{exercises.length} | Set{" "}
+            {currentSet + 1}/{exercises[currentExercise].sets}
           </div>
           <button style={styles.exitBtn} onClick={exitWorkout}>
             EXIT
@@ -315,15 +404,15 @@ function App() {
 
           <div style={styles.contentWithHeader}>
             <h1 style={styles.exerciseName}>
-              {EXERCISES[currentExercise].name}
+              {exercises[currentExercise].name}
             </h1>
             <h2 style={styles.setInfo}>
-              Set {currentSet + 1} of {EXERCISES[currentExercise].sets}
+              Set {currentSet + 1} of {exercises[currentExercise].sets}
             </h2>
             <div style={styles.repsTarget}>
-              {EXERCISES[currentExercise].reps} reps
+              {exercises[currentExercise].reps} reps
             </div>
-            <div style={styles.info}>{EXERCISES[currentExercise].notes}</div>
+            <div style={styles.info}>{exercises[currentExercise].notes}</div>
             <button style={styles.btn} onClick={completeSet}>
               SET COMPLETE
             </button>
@@ -335,8 +424,8 @@ function App() {
       {screen === "rest" && (
         <div style={styles.screen}>
           <div style={styles.progress}>
-            Exercise {currentExercise + 1}/{EXERCISES.length} | Set{" "}
-            {currentSet + 1}/{EXERCISES[currentExercise].sets}
+            Exercise {currentExercise + 1}/{exercises.length} | Set{" "}
+            {currentSet + 1}/{exercises[currentExercise].sets}
           </div>
           <button style={styles.exitBtn} onClick={exitWorkout}>
             EXIT
@@ -364,7 +453,7 @@ function App() {
       {screen === "ready" && (
         <div style={styles.screen}>
           <h2 style={styles.setInfo}>GET READY</h2>
-          <h1 style={styles.exerciseName}>{EXERCISES[currentExercise].name}</h1>
+          <h1 style={styles.exerciseName}>{exercises[currentExercise].name}</h1>
           <div style={styles.setInfo}>Set {currentSet + 1}</div>
           <div style={styles.countdown}>{countdown}</div>
         </div>
@@ -375,7 +464,7 @@ function App() {
         <div style={styles.screen}>
           <div style={styles.completionIcon}>✅</div>
           <h1 style={styles.exerciseName}>
-            {EXERCISES[currentExercise].name} COMPLETE!
+            {exercises[currentExercise].name} COMPLETE!
           </h1>
           <div style={styles.info}>All sets finished!</div>
           <button style={styles.btn} onClick={nextExercise}>
@@ -391,7 +480,7 @@ function App() {
           <h1 style={styles.title}>WORKOUT COMPLETE!</h1>
           <div style={styles.exerciseList}>
             <div style={styles.exerciseItem}>Duration: {getDuration()} min</div>
-            <div style={styles.exerciseItem}>Exercises: {EXERCISES.length}</div>
+            <div style={styles.exerciseItem}>Exercises: {exercises.length}</div>
             <div style={{ ...styles.exerciseItem, borderBottom: "none" }}>
               Total Sets: {totalSets}
             </div>
