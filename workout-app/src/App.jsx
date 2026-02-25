@@ -177,6 +177,13 @@ function App() {
     }
   }
 
+  const currentWeekSubType = () => {
+    if (currentWeek <= 4) return 'Weeks 1-4'
+    else if (currentWeek <= 8) return 'Weeks 5-8'
+    else return 'Weeks 9-12'
+  }
+
+
   // Timer effect for rest
   useEffect(() => {
     if (screen === "rest" && timer > 0) {
@@ -268,7 +275,8 @@ function App() {
       setScreen("ready");
       setCountdown(3);
     } else {
-      setScreen('cool-down')
+      if (COOLDOWNS[currentWeekSubType()]) {setScreen('cool-down')}
+      else setScreen('done')
     }
   };
 
@@ -478,10 +486,10 @@ function App() {
       )}
 
       {/* COOL DOWN TIME */}
-      {(screen == "cool-down" && COOLDOWNS['Weeks 5-8']) && (<div style={styles.screen}>
+      {(screen == "cool-down" && COOLDOWNS[currentWeekSubType()]) && (<div style={styles.screen}>
           <h1 style={styles.title}>COOL DOWN</h1>
           <div style={styles.exerciseList}>
-            {COOLDOWNS['Weeks 5-8'].map((ex, i) => (
+            {COOLDOWNS[currentWeekSubType()].map((ex, i) => (
               <div key={i} style={styles.exerciseItem}>
                 {ex}
               </div>
