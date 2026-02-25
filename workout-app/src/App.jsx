@@ -268,7 +268,7 @@ function App() {
       setScreen("ready");
       setCountdown(3);
     } else {
-      setScreen("done");
+      setScreen('cool-down')
     }
   };
 
@@ -297,6 +297,10 @@ function App() {
   };
 
   const totalSets = exercises.reduce((sum, ex) => sum + ex.sets, 0);
+
+  const finishCooldown = () => {
+    setScreen('done')
+  }
 
   const finishWorkout = () => {
     const newWorkout = {
@@ -472,6 +476,21 @@ function App() {
           </button>
         </div>
       )}
+
+      {/* COOL DOWN TIME */}
+      {(screen == "cool-down" && COOLDOWNS['Weeks 5-8']) && (<div style={styles.screen}>
+          <h1 style={styles.title}>COOL DOWN</h1>
+          <div style={styles.exerciseList}>
+            {COOLDOWNS['Weeks 5-8'].map((ex, i) => (
+              <div key={i} style={styles.exerciseItem}>
+                {ex}
+              </div>
+            ))}
+          </div>
+          <button style={styles.btn} onClick={finishCooldown}>
+            DONE 
+          </button>
+        </div>)}
 
       {/* WORKOUT DONE SCREEN */}
       {screen === "done" && (
