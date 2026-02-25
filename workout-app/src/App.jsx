@@ -268,6 +268,7 @@ function App() {
       {screen === "start" && (
         <div style={styles.screen}>
           <h1 style={styles.title}>WORKOUT COACH</h1>
+          <div style={styles.info}>Week {currentWeek} of 12</div>
           <div style={styles.exerciseList}>
             <h2 style={styles.listTitle}>Week 1 - Foundation</h2>
             {EXERCISES.map((ex, i) => (
