@@ -32,8 +32,8 @@ const EXERCISES_W1_W4 = [
   },
   {
     name: "PLANK",
-    sets: 3,
-    reps: "15-30s",
+    sets: 2,
+    reps: "75s or more/less",
     rest: 60,
     notes: "Straight line, don't sag",
   },
