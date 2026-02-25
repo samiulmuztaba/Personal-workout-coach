@@ -55,7 +55,7 @@ const WARMUP_EXERCISES = [
 ];
 
 function App() {
-  const [screen, setScreen] = useState("setup"); // start, warmup, exercise, rest, ready, exerciseDone, done
+  const [screen, setScreen] = useState(""); // start, warmup, exercise, rest, ready, exerciseDone, done
   const [currentExercise, setCurrentExercise] = useState(0);
   const [currentSet, setCurrentSet] = useState(0);
   const [timer, setTimer] = useState(0);
@@ -115,10 +115,12 @@ function App() {
     }
   }, [screen, countdown]);
 
-  // calculate current week
   useEffect(() => {
     if (startDate) {
       setCurrentWeek(calculateCurrentWeek());
+      setScreen("start");
+    } else {
+      setScreen('setup')
     }
   }, [startDate]);
 
