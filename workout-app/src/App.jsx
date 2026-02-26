@@ -220,6 +220,12 @@ const COOLDOWNS = {
   ],
 };
 
+const WORKOUT_DAYS = {
+  "Weeks 1-4": ["Monday", "Wednesday", "Friday"],
+  "Weeks 5-4": ["Monday", "Wednesday", "Friday"],
+  "Weeks 9-12": ["Monday", "Wednesday", "Thursday", "Friday"],
+};
+
 function App() {
   const [screen, setScreen] = useState(""); // start, warmup, exercise, rest, ready, exerciseDone, done
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -231,6 +237,7 @@ function App() {
   const [startDate, setStartDate] = useState(null);
   const [workoutHistory, setWorkoutHistory] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(1); // default
+  const [haveTrainingToday, setHaveTrainingToday] = useState(true);
 
   function getTodayDate() {
     return new Date().toISOString().split("T")[0];
@@ -255,6 +262,40 @@ function App() {
     return theoreticalWeek;
   }
 
+  const currentWeekSubType = () => {
+    if (currentWeek <= 4) return "Weeks 1-4";
+    else if (currentWeek <= 8) return "Weeks 5-8";
+    else return "Weeks 9-12";
+  };
+
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  function getToday() {
+    const today = new Date();
+    const dayOfWeekName = daysOfWeek[today.getDay()];
+    return dayOfWeekName;
+  }
+
+  function getNextWorkoutDay() {
+    const workout_days = WORKOUT_DAYS[currentWeekSubType()];
+    const next_days_in_order = [
+      ...daysOfWeek.slice(daysOfWeek.indexOf(getToday()) + 1, 7),
+      ...daysOfWeek.slice(0, daysOfWeek.indexOf(getToday()) + 1),
+    ];
+
+    return next_days_in_order.filter((d) => workout_days.includes(d))[0];
+  }
+
+  console.log(getNextWorkoutDay());
+
   function getCurrentExercises() {
     if (currentWeek <= 4) return EXERCISES_W1_W4;
     else if (currentWeek <= 8) return EXERCISES_W5_W8;
@@ -270,11 +311,12 @@ function App() {
     }
   }
 
-  const currentWeekSubType = () => {
-    if (currentWeek <= 4) return "Weeks 1-4";
-    else if (currentWeek <= 8) return "Weeks 5-8";
-    else return "Weeks 9-12";
-  };
+  // Have workout today or not effect
+  useEffect(() => {
+    if (getToday() in WORKOUT_DAYS[currentWeekSubType()]) {
+      setHaveTrainingToday(true);
+    } else setHaveTrainingToday(false);
+  }, [currentWeekSubType()]);
 
   // Timer effect for rest
   useEffect(() => {
@@ -305,7 +347,7 @@ function App() {
   useEffect(() => {
     if (startDate) {
       setCurrentWeek(calculateCurrentWeek());
-      setScreen("start");
+      setScreen("dashboard");
     } else {
       setScreen("setup");
     }
@@ -374,7 +416,7 @@ function App() {
   };
 
   const restart = () => {
-    setScreen("start");
+    setScreen("dashboard");
     setCurrentExercise(0);
     setCurrentSet(0);
     setTimer(0);
@@ -412,7 +454,7 @@ function App() {
       duration: getDuration(),
     };
     setWorkoutHistory([...workoutHistory, newWorkout]);
-    setScreen("start");
+    setScreen("dashboard");
     setCurrentExercise(0);
     setCurrentSet(0);
     setTimer(0);
@@ -449,7 +491,7 @@ function App() {
             style={styles.btn}
             onClick={() => {
               if (startDate) {
-                setScreen("start");
+                setScreen("dashboard");
               } else {
                 alert("Please select a date first!");
               }
@@ -460,6 +502,24 @@ function App() {
           </button>
         </div>
       )}
+
+      {/* DASHBOARD SCREEN */}
+      {screen === "dashboard" && (
+        <div style={styles.screen}>
+          <h1 style={styles.title}>WORKOUT COACH</h1>
+          <div style={styles.info}>Week {currentWeek} of 12</div>
+          {haveTrainingToday && (
+            <div>
+              <h1 style={styles.info}>TIME TO TRAIIN todaayy!</h1>
+              <button style={styles.btn} onClick={() => setScreen("start")}>
+                START NOW
+              </button>
+            </div>
+          )}
+          <h1 style={styles.info}>Next workout on: {getNextWorkoutDay()}</h1>
+        </div>
+      )}
+
       {/* START SCREEN */}
       {screen === "start" && (
         <div style={styles.screen}>
