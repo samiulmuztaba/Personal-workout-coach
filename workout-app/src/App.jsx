@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 
 // Workout data
+const WARMUP_EXERCISES = [
+  "Jumping jacks - 30 seconds",
+  "Arm circles - 20 each way",
+  "Leg swings - 10 each leg",
+  "Squats - 10 reps",
+  "Cat-cow - 10 reps",
+];
+
 const EXERCISES_W1_W4 = [
   {
     name: "PUSH-UPS",
@@ -99,8 +107,101 @@ const EXERCISES_W5_W8 = [
 ];
 
 const EXERCISES_W9_W12 = {
-  A: [],
-  B: [],
+  A: [
+    {
+      name: "PUSH-UPS (tempo 3-0-1)",
+      sets: 4,
+      reps: "10-15",
+      rest: 90,
+      notes: "3 seconds down, explode up fast",
+    },
+    {
+      name: "PIKE PUSH-UPS",
+      sets: 3,
+      reps: "6-10",
+      rest: 90,
+      notes: "Hips high, focus on shoulders",
+    },
+    {
+      name: "BULGARIAN SPLIT SQUATS",
+      sets: 3,
+      reps: "8-10 each leg",
+      rest: 90,
+      notes: "Back foot elevated on chair",
+    },
+    {
+      name: "LOADED SQUATS",
+      sets: 3,
+      reps: "12-15",
+      rest: 75,
+      notes: "5-8kg in backpack, full depth",
+    },
+    {
+      name: "CALF RAISES",
+      sets: 3,
+      reps: "15-20",
+      rest: 60,
+      notes: "On step edge for full range",
+    },
+    {
+      name: "PLANK TO DOWN-DOG",
+      sets: 3,
+      reps: "10",
+      rest: 60,
+      notes: "Core strength + shoulder mobility",
+    },
+  ],
+  B: [
+    {
+      name: "INVERTED ROWS",
+      sets: 4,
+      reps: "10-15",
+      rest: 90,
+      notes: "Squeeze shoulder blades hard at top",
+    },
+    {
+      name: "BACKPACK ROWS",
+      sets: 3,
+      reps: "12-15",
+      rest: 75,
+      notes: "Bent over, 5-8kg load, row to hip",
+    },
+    {
+      name: "REVERSE SNOW ANGELS",
+      sets: 3,
+      reps: "12-15",
+      rest: 60,
+      notes: "Face down, arms make angel pattern",
+    },
+    {
+      name: "SINGLE-LEG RDLs",
+      sets: 3,
+      reps: "8-10 each leg",
+      rest: 75,
+      notes: "Balance work + hamstring strength",
+    },
+    {
+      name: "DEAD HANGS",
+      sets: 3,
+      reps: "30-45s",
+      rest: 90,
+      notes: "If you have a bar. Builds grip strength",
+    },
+    {
+      name: "BICYCLE CRUNCHES",
+      sets: 3,
+      reps: "20-30",
+      rest: 60,
+      notes: "Slow and controlled, full rotation",
+    },
+    {
+      name: "BIRD DOGS",
+      sets: 3,
+      reps: "10 per side",
+      rest: 45,
+      notes: "Core stability, posture",
+    },
+  ],
 };
 
 const COOLDOWNS = {
@@ -118,14 +219,6 @@ const COOLDOWNS = {
     "Jump rope - 5–10 minutes (build up gradually)",
   ],
 };
-
-const WARMUP_EXERCISES = [
-  "Jumping jacks - 30 seconds",
-  "Arm circles - 20 each way",
-  "Leg swings - 10 each leg",
-  "Squats - 10 reps",
-  "Cat-cow - 10 reps",
-];
 
 function App() {
   const [screen, setScreen] = useState(""); // start, warmup, exercise, rest, ready, exerciseDone, done
@@ -178,11 +271,10 @@ function App() {
   }
 
   const currentWeekSubType = () => {
-    if (currentWeek <= 4) return 'Weeks 1-4'
-    else if (currentWeek <= 8) return 'Weeks 5-8'
-    else return 'Weeks 9-12'
-  }
-
+    if (currentWeek <= 4) return "Weeks 1-4";
+    else if (currentWeek <= 8) return "Weeks 5-8";
+    else return "Weeks 9-12";
+  };
 
   // Timer effect for rest
   useEffect(() => {
@@ -251,7 +343,7 @@ function App() {
     setScreen("exercise");
   };
 
-  const exercises = getCurrentExercises()
+  const exercises = getCurrentExercises();
   const completeSet = () => {
     const ex = exercises[currentExercise];
     if (currentSet < ex.sets - 1) {
@@ -275,8 +367,9 @@ function App() {
       setScreen("ready");
       setCountdown(3);
     } else {
-      if (COOLDOWNS[currentWeekSubType()]) {setScreen('cool-down')}
-      else setScreen('done')
+      if (COOLDOWNS[currentWeekSubType()]) {
+        setScreen("cool-down");
+      } else setScreen("done");
     }
   };
 
@@ -307,8 +400,8 @@ function App() {
   const totalSets = exercises.reduce((sum, ex) => sum + ex.sets, 0);
 
   const finishCooldown = () => {
-    setScreen('done')
-  }
+    setScreen("done");
+  };
 
   const finishWorkout = () => {
     const newWorkout = {
@@ -373,7 +466,10 @@ function App() {
           <h1 style={styles.title}>WORKOUT COACH</h1>
           <div style={styles.info}>Week {currentWeek} of 12</div>
           <div style={styles.exerciseList}>
-            <h2 style={styles.listTitle}>Week {currentWeek} - {currentWeek < 9 ? "Foundation" : "Building Strength"}</h2>
+            <h2 style={styles.listTitle}>
+              Week {currentWeek} -{" "}
+              {currentWeek < 9 ? "Foundation" : "Building Strength"}
+            </h2>
             {exercises.map((ex, i) => (
               <div key={i} style={styles.exerciseItem}>
                 {i + 1}. {ex.name} - {ex.sets}×{ex.reps}
@@ -486,7 +582,8 @@ function App() {
       )}
 
       {/* COOL DOWN TIME */}
-      {(screen == "cool-down" && COOLDOWNS[currentWeekSubType()]) && (<div style={styles.screen}>
+      {screen == "cool-down" && COOLDOWNS[currentWeekSubType()] && (
+        <div style={styles.screen}>
           <h1 style={styles.title}>COOL DOWN</h1>
           <div style={styles.exerciseList}>
             {COOLDOWNS[currentWeekSubType()].map((ex, i) => (
@@ -496,9 +593,10 @@ function App() {
             ))}
           </div>
           <button style={styles.btn} onClick={finishCooldown}>
-            DONE 
+            DONE
           </button>
-        </div>)}
+        </div>
+      )}
 
       {/* WORKOUT DONE SCREEN */}
       {screen === "done" && (
