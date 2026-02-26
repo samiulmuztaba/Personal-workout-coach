@@ -83,7 +83,7 @@ const EXERCISES_W5_W8 = [
     notes: "Build oblique strength",
   },
   {
-    name: "SUPERHUMAN HOLDS",
+    name: "SUPERMAN HOLDS",
     sets: 3,
     reps: "15-20s",
     rest: 60,
@@ -99,8 +99,8 @@ const EXERCISES_W5_W8 = [
 ];
 
 const EXERCISES_W9_W12 = {
-  A: {},
-  B: {},
+  A: [],
+  B: [],
 };
 
 const COOLDOWNS = {
@@ -164,7 +164,7 @@ function App() {
 
   function getCurrentExercises() {
     if (currentWeek <= 4) return EXERCISES_W1_W4;
-    else if (currentExercise <= 8) return EXERCISES_W5_W8;
+    else if (currentWeek <= 8) return EXERCISES_W5_W8;
     else {
       const day = new Date().getDay();
       if (day === 1 || day === 4) {
