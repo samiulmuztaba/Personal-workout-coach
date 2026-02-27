@@ -287,14 +287,15 @@ function App() {
   function getNextWorkoutDay() {
     const workout_days = WORKOUT_DAYS[currentWeekSubType()];
     const next_days_in_order = [
-      ...daysOfWeek.slice(daysOfWeek.indexOf(getToday()) + 1, 7),
-      ...daysOfWeek.slice(0, daysOfWeek.indexOf(getToday()) + 1),
+      ...daysOfWeek.slice(daysOfWeek.indexOf(getToday()), 7),
+      ...daysOfWeek.slice(0, daysOfWeek.indexOf(getToday())),
     ];
 
-    return next_days_in_order.filter((d) => workout_days.includes(d))[0];
+    console.log("The week in order from today", next_days_in_order)
+    return next_days_in_order.filter((d) => workout_days.includes(d))[1];
   }
 
-  console.log(getNextWorkoutDay());
+  console.log("Next workout on", getNextWorkoutDay());
 
   function getCurrentExercises() {
     if (currentWeek <= 4) return EXERCISES_W1_W4;
@@ -313,10 +314,11 @@ function App() {
 
   // Have workout today or not effect
   useEffect(() => {
-    if (getToday() in WORKOUT_DAYS[currentWeekSubType()]) {
+    if (WORKOUT_DAYS[currentWeekSubType()].includes(getToday())) {
+      console.log("Today is in workout_days for this week sub type")
       setHaveTrainingToday(true);
-    } else setHaveTrainingToday(false);
-  }, [currentWeekSubType()]);
+    } else setHaveTrainingToday(false)
+  }, [currentWeekSubType(), getToday()]);
 
   // Timer effect for rest
   useEffect(() => {
@@ -517,6 +519,7 @@ function App() {
             </div>
           )}
           <h1 style={styles.info}>Next workout on: {getNextWorkoutDay()}</h1>
+          
         </div>
       )}
 
