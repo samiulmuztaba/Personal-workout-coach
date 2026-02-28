@@ -228,14 +228,41 @@ const WORKOUT_DAYS = {
 
 function CancelCross() {
   return (
-    <div style={{
-      position: 'fixed',
-      top: '10px',
-      right: '10px'
-    }}>
-      <button><h2 style={{ margin: '0' }}>X</h2></button>
+    <div
+      style={{
+        position: "fixed",
+        top: "10px",
+        right: "10px",
+      }}
+    >
+      <button style={{
+          width: "42px",
+          height: "42px",
+          borderRadius: "50%",
+          border: "none",
+          background: "#111",
+          color: "#fff",
+          fontSize: "20px",
+          fontWeight: "600",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 6px 18px rgba(0,0,0,0.35)",
+          transition: "all 0.2s ease",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "#e53935";
+          e.currentTarget.style.transform = "scale(1.1)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "#111";
+          e.currentTarget.style.transform = "scale(1)";
+        }}>
+        ✕
+      </button>
     </div>
-  )
+  );
 }
 
 function App() {
@@ -575,7 +602,9 @@ function App() {
       {/* START SCREEN */}
       {screen === "start" && (
         <div style={styles.screen}>
-          <span onClick={() => setScreen('dashboard')}><CancelCross/></span>
+          <span onClick={() => setScreen("dashboard")}>
+            <CancelCross />
+          </span>
           <h1 style={styles.title}>WORKOUT COACH</h1>
           <div style={styles.info}>Week {currentWeek} of 12</div>
           <div style={styles.exerciseList}>
