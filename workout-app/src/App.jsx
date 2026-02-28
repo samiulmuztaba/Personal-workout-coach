@@ -222,7 +222,7 @@ const COOLDOWNS = {
 
 const WORKOUT_DAYS = {
   "Weeks 1-4": ["Monday", "Wednesday", "Friday"],
-  "Weeks 5-4": ["Monday", "Wednesday", "Friday"],
+  "Weeks 5-8": ["Monday", "Wednesday", "Friday"],
   "Weeks 9-12": ["Monday", "Wednesday", "Thursday", "Friday"],
 };
 
@@ -291,8 +291,11 @@ function App() {
       ...daysOfWeek.slice(0, daysOfWeek.indexOf(getToday())),
     ];
 
-    console.log("The week in order from today", next_days_in_order)
-    return next_days_in_order.filter((d) => workout_days.includes(d))[0] === getToday() ? "Today" : next_days_in_order.filter((d) => workout_days.includes(d))[0];
+    console.log("The week in order from today", next_days_in_order);
+    return next_days_in_order.filter((d) => workout_days.includes(d))[0] ===
+      getToday()
+      ? next_days_in_order.filter((d) => workout_days.includes(d))[1]
+      : next_days_in_order.filter((d) => workout_days.includes(d))[0];
   }
 
   console.log("Next workout on", getNextWorkoutDay());
@@ -315,9 +318,9 @@ function App() {
   // Have workout today or not effect
   useEffect(() => {
     if (WORKOUT_DAYS[currentWeekSubType()].includes(getToday())) {
-      console.log("Today is in workout_days for this week sub type")
+      console.log("Today is in workout_days for this week sub type");
       setHaveTrainingToday(true);
-    } else setHaveTrainingToday(false)
+    } else setHaveTrainingToday(false);
   }, [currentWeekSubType(), getToday()]);
 
   // Timer effect for rest
@@ -510,16 +513,50 @@ function App() {
         <div style={styles.screen}>
           <h1 style={styles.title}>WORKOUT COACH</h1>
           <div style={styles.info}>Week {currentWeek} of 12</div>
+
           {haveTrainingToday && (
-            <div>
-              <h1 style={styles.info}>TIME TO TRAIIN todaayy!</h1>
-              <button style={styles.btn} onClick={() => setScreen("start")}>
-                START NOW
-              </button>
+            <div
+              style={{
+                background: "#00ff88",
+                color: "#000",
+                padding: "20px 40px",
+                borderRadius: "15px",
+                margin: "20px 0",
+                fontWeight: "700",
+                fontSize: "1.5em",
+              }}
+            >
+              ⚠️ TIME TO TRAIN TODAY!
             </div>
           )}
-          <h1 style={styles.info}>Next workout on: {getNextWorkoutDay()}</h1>
-          
+
+          {haveTrainingToday && (
+            <button style={styles.btn} onClick={() => setScreen("start")}>
+              🔥 START TODAY'S WORKOUT
+            </button>
+          )}
+
+          {!haveTrainingToday && (
+            <div
+              style={{
+                background: "#333",
+                padding: "20px 40px",
+                borderRadius: "15px",
+                margin: "20px 0",
+                fontSize: "1.3em",
+              }}
+            >
+              😌 Rest Day - Recover and eat well!
+            </div>
+          )}
+
+          <div style={styles.info}>
+            Next workout:{" "}
+            <strong style={{ color: "#00ff88" }}>{getNextWorkoutDay()}</strong>
+          </div>
+
+          {/* TODO: Add calendar here */}
+          {/* TODO: Add streak counter here */}
         </div>
       )}
 
