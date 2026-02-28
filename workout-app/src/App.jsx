@@ -292,7 +292,7 @@ function App() {
     ];
 
     console.log("The week in order from today", next_days_in_order)
-    return next_days_in_order.filter((d) => workout_days.includes(d))[1];
+    return next_days_in_order.filter((d) => workout_days.includes(d))[0] === getToday() ? "Today" : next_days_in_order.filter((d) => workout_days.includes(d))[0];
   }
 
   console.log("Next workout on", getNextWorkoutDay());
