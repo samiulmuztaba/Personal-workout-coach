@@ -221,10 +221,22 @@ const COOLDOWNS = {
 };
 
 const WORKOUT_DAYS = {
-  "Weeks 1-4": ["Monday", "Wednesday", "Friday"],
+  "Weeks 1-4": ["Monday", "Wednesday", "Friday", "Saturday"],
   "Weeks 5-8": ["Monday", "Wednesday", "Friday"],
   "Weeks 9-12": ["Monday", "Wednesday", "Thursday", "Friday"],
 };
+
+function CancelCross() {
+  return (
+    <div style={{
+      position: 'fixed',
+      top: '10px',
+      right: '10px'
+    }}>
+      <button><h2 style={{ margin: '0' }}>X</h2></button>
+    </div>
+  )
+}
 
 function App() {
   const [screen, setScreen] = useState(""); // start, warmup, exercise, rest, ready, exerciseDone, done
@@ -563,6 +575,7 @@ function App() {
       {/* START SCREEN */}
       {screen === "start" && (
         <div style={styles.screen}>
+          <span onClick={() => setScreen('dashboard')}><CancelCross/></span>
           <h1 style={styles.title}>WORKOUT COACH</h1>
           <div style={styles.info}>Week {currentWeek} of 12</div>
           <div style={styles.exerciseList}>
