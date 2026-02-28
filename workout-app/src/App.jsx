@@ -730,7 +730,7 @@ function App() {
       )}
 
       {/* COOL DOWN TIME */}
-      {screen == "cool-down" && COOLDOWNS[weekType] && (
+      {screen === "cool-down" && COOLDOWNS[weekType] && (
         <div style={styles.screen}>
           <h1 style={styles.title}>COOL DOWN</h1>
           <div style={styles.exerciseList}>
