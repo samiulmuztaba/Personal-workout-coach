@@ -221,7 +221,7 @@ const COOLDOWNS = {
 };
 
 const WORKOUT_DAYS = {
-  "Weeks 1-4": ["Monday", "Wednesday", "Friday", "Saturday"],
+  "Weeks 1-4": ["Monday", "Wednesday", "Friday"],
   "Weeks 5-8": ["Monday", "Wednesday", "Friday"],
   "Weeks 9-12": ["Monday", "Wednesday", "Thursday", "Friday"],
 };
@@ -235,7 +235,8 @@ function CancelCross() {
         right: "10px",
       }}
     >
-      <button style={{
+      <button
+        style={{
           width: "42px",
           height: "42px",
           borderRadius: "50%",
@@ -258,7 +259,8 @@ function CancelCross() {
         onMouseLeave={(e) => {
           e.currentTarget.style.background = "#111";
           e.currentTarget.style.transform = "scale(1)";
-        }}>
+        }}
+      >
         ✕
       </button>
     </div>
@@ -322,17 +324,20 @@ function App() {
     const dayOfWeekName = daysOfWeek[today.getDay()];
     return dayOfWeekName;
   }
+  
+  const today = getToday();
+  const weekType = currentWeekSubType();
 
   function getNextWorkoutDay() {
-    const workout_days = WORKOUT_DAYS[currentWeekSubType()];
+    const workout_days = WORKOUT_DAYS[weekType];
     const next_days_in_order = [
-      ...daysOfWeek.slice(daysOfWeek.indexOf(getToday()), 7),
-      ...daysOfWeek.slice(0, daysOfWeek.indexOf(getToday())),
+      ...daysOfWeek.slice(daysOfWeek.indexOf(today), 7),
+      ...daysOfWeek.slice(0, daysOfWeek.indexOf(today)),
     ];
 
     console.log("The week in order from today", next_days_in_order);
     return next_days_in_order.filter((d) => workout_days.includes(d))[0] ===
-      getToday()
+      today
       ? next_days_in_order.filter((d) => workout_days.includes(d))[1]
       : next_days_in_order.filter((d) => workout_days.includes(d))[0];
   }
@@ -354,13 +359,14 @@ function App() {
     }
   }
 
+
   // Have workout today or not effect
   useEffect(() => {
-    if (WORKOUT_DAYS[currentWeekSubType()].includes(getToday())) {
+    if (WORKOUT_DAYS[weekType].includes(today)) {
       console.log("Today is in workout_days for this week sub type");
       setHaveTrainingToday(true);
     } else setHaveTrainingToday(false);
-  }, [currentWeekSubType(), getToday()]);
+  }, [weekType, today]);
 
   // Timer effect for rest
   useEffect(() => {
@@ -453,7 +459,7 @@ function App() {
       setScreen("ready");
       setCountdown(3);
     } else {
-      if (COOLDOWNS[currentWeekSubType()]) {
+      if (COOLDOWNS[weekType]) {
         setScreen("cool-down");
       } else setScreen("done");
     }
@@ -724,11 +730,11 @@ function App() {
       )}
 
       {/* COOL DOWN TIME */}
-      {screen == "cool-down" && COOLDOWNS[currentWeekSubType()] && (
+      {screen == "cool-down" && COOLDOWNS[weekType] && (
         <div style={styles.screen}>
           <h1 style={styles.title}>COOL DOWN</h1>
           <div style={styles.exerciseList}>
-            {COOLDOWNS[currentWeekSubType()].map((ex, i) => (
+            {COOLDOWNS[weekType].map((ex, i) => (
               <div key={i} style={styles.exerciseItem}>
                 {ex}
               </div>
