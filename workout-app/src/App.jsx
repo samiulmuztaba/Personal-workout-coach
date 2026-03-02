@@ -276,13 +276,18 @@ function App() {
   const [startTime, setStartTime] = useState(null);
 
   const [startDate, setStartDate] = useState(null);
-  const [workoutHistory, setWorkoutHistory] = useState([{
-    date: '2026-03-01',
-    completed: true,
-    week: 1,
-    exercisesDone: 6,
-    duration: 31
-}]);
+  const [workoutHistory, setWorkoutHistory] = useState([
+    {
+      date: "2026-03-01",
+      completed: true,
+      week: 1,
+      exercisesDone: 6,
+      duration: 31,
+    },
+  ]);
+
+  const [viewDate, setViewDate] = useState(new Date());
+
   const [currentWeek, setCurrentWeek] = useState(1); // default
   const [haveTrainingToday, setHaveTrainingToday] = useState(true);
 
@@ -414,7 +419,7 @@ function App() {
     if (saved) {
       const data = JSON.parse(saved);
       setStartDate(data.startDate);
-      setWorkoutHistory(data.workoutHistory);
+      setWorkoutHistory([...workoutHistory, data.workoutHistory]);
     }
   }, []);
 
@@ -516,41 +521,78 @@ function App() {
   };
 
   const getDaysInMonth = (year, month) => {
-    const date = new Date(year, month, 1); // from the first day of the month of the year
+    const date = new Date(year, month, 1); // DO NOT TOUCH THIS
     const days = [];
+
+    // Pad BEFORE the month
     for (let i = 0; i < date.getDay(); i++) {
       days.push(null);
     }
 
-    while (date.getMonth() == month) {
-      days.push(new Date(date).toISOString().split("T")[0]);
+    // Move forward only
+    while (date.getMonth() === month) {
+      days.push(date.getDate());
       date.setDate(date.getDate() + 1);
     }
+
     return days;
   };
 
-  const renderCalendar = () => {
-    const now = new Date();
-    const monthDays = getDaysInMonth(now.getFullYear(), now.getMonth());
-    const monthName = now.toLocaleString("default", { month: "long" });
 
-    // Quick lookup for history
+
+  // const getDaysInMonth = (year, month) => {
+  //   const firstDayIndex = new Date(year, month, 1).getDay();
+  //   const totalDays = new Date(year, month + 1, 0).getDate();
+
+  //   const days = [];
+
+  //   // Add the "padding" slots
+  //   for (let i = 0; i < firstDayIndex; i++) {
+  //     days.push(null);
+  //   }
+
+  //   // Add the real days
+  //   for (let d = 1; d <= totalDays; d++) {
+  //     days.push(
+  //       `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`,
+  //     );
+  //   }
+
+  //   return days;
+  // };
+
+  const renderCalendar = () => {
+    const viewYear = viewDate.getFullYear();
+    const viewMonth = viewDate.getMonth();
+
+    const monthDays = getDaysInMonth(viewYear, viewMonth);
+    console.log(monthDays)
+    const monthName = viewDate.toLocaleString("default", { month: "long" });
+
+    const prevMonth = () => setViewDate(new Date(viewYear, viewMonth - 1, 1));
+    const nextMonth = () => setViewDate(new Date(viewYear, viewMonth + 1, 1));
+
     const historyDates = workoutHistory.map((h) => h.date);
+    console.log(historyDates);
 
     return (
       <div style={styles.calendarContainer}>
         <h3 style={{ color: "#888", marginBottom: "15px" }}>
-          {monthName} {now.getFullYear()}
+          {monthName} {viewYear}
         </h3>
+        <button onClick={prevMonth}>{"<"}</button>{" "}
+        <button onClick={nextMonth}>{">"}</button>
         <div style={styles.calendarGrid}>
-          {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
             <div key={day} style={styles.dayHeader}>
               {day}
             </div>
           ))}
           {monthDays.map((date, i) => {
             const isWorkoutDay = date && historyDates.includes(date);
-            const isToday = date === new Date().toISOString().split("T")[0];
+            const isToday = date == new Date().toISOString().split("T")[0].split('-')[2];
+            console.log(new Date().toISOString().split('T')[0].split('-')[2])
+            console.log(date)
 
             return (
               <div
@@ -561,7 +603,7 @@ function App() {
                   ...(isToday ? styles.todayCell : {}),
                 }}
               >
-                {date ? new Date(date).getDate() : ""}
+                {date}
               </div>
             );
           })}
