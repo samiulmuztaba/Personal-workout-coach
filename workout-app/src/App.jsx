@@ -538,8 +538,6 @@ function App() {
     return days;
   };
 
-
-
   // const getDaysInMonth = (year, month) => {
   //   const firstDayIndex = new Date(year, month, 1).getDay();
   //   const totalDays = new Date(year, month + 1, 0).getDate();
@@ -566,7 +564,7 @@ function App() {
     const viewMonth = viewDate.getMonth();
 
     const monthDays = getDaysInMonth(viewYear, viewMonth);
-    console.log(monthDays)
+    console.log(monthDays);
     const monthName = viewDate.toLocaleString("default", { month: "long" });
 
     const prevMonth = () => setViewDate(new Date(viewYear, viewMonth - 1, 1));
@@ -575,15 +573,26 @@ function App() {
     const historyDates = workoutHistory.map((h) => h.date);
     console.log(historyDates);
 
-    
-
     return (
       <div style={styles.calendarContainer}>
-        <h3 style={{ color: "#888", marginBottom: "15px" }}>
-          {monthName} {viewYear}
-        </h3>
-        <button onClick={prevMonth}>{"<"}</button>{" "}
-        <button onClick={nextMonth}>{">"}</button>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <button onClick={prevMonth} style={styles.navBtn}>
+            &lt;
+          </button>
+          <h3 style={{ margin: 0, color: "#fff" }}>
+            {monthName} {viewYear}
+          </h3>
+          <button onClick={nextMonth} style={styles.navBtn}>
+            &gt;
+          </button>
+        </div>
         <div style={styles.calendarGrid}>
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
             <div key={day} style={styles.dayHeader}>
@@ -591,14 +600,19 @@ function App() {
             </div>
           ))}
           {monthDays.map((date, i) => {
-            let showZero = ''
+            let showZero = "";
             if (date < 10) {
-              showZero = '0'
+              showZero = "0";
             }
-            const isWorkoutDay = date && historyDates.includes(`${viewYear}-0${viewMonth+1}-${date < 10 && '0'}${date}`);
-            const isToday = date == new Date().toISOString().split("T")[0].split('-')[2];
-            console.log(new Date().toISOString().split('T')[0].split('-')[2])
-            console.log(`${viewYear}-0${viewMonth}-${showZero}${date}`)
+            const isWorkoutDay =
+              date &&
+              historyDates.includes(
+                `${viewYear}-0${viewMonth + 1}-${date < 10 && "0"}${date}`,
+              );
+            const isToday =
+              date == new Date().toISOString().split("T")[0].split("-")[2];
+            console.log(new Date().toISOString().split("T")[0].split("-")[2]);
+            console.log(`${viewYear}-0${viewMonth}-${showZero}${date}`);
 
             return (
               <div
@@ -1054,6 +1068,16 @@ const styles = {
   todayCell: {
     border: "2px solid #00ff88",
     color: "#fff",
+  },
+  navBtn: {
+    background: "#222",
+    color: "#00ff88",
+    border: "1px solid #333",
+    borderRadius: "5px",
+    padding: "5px 15px",
+    cursor: "pointer",
+    fontSize: "1.2em",
+    fontWeight: "bold",
   },
 };
 
