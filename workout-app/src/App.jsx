@@ -276,15 +276,7 @@ function App() {
   const [startTime, setStartTime] = useState(null);
 
   const [startDate, setStartDate] = useState(null);
-  const [workoutHistory, setWorkoutHistory] = useState([
-    {
-      date: "2026-03-01",
-      completed: true,
-      week: 1,
-      exercisesDone: 6,
-      duration: 31,
-    },
-  ]);
+  const [workoutHistory, setWorkoutHistory] = useState([]);
 
   const [viewDate, setViewDate] = useState(new Date());
 
