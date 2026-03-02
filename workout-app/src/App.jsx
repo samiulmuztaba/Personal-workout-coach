@@ -402,16 +402,6 @@ function App() {
     }
   }, [startDate]);
 
-  // Load data on mount
-  // useEffect(() => {
-  //   const saved = localStorage.getItem("workoutData");
-  //   if (saved) {
-  //     const data = JSON.parse(saved);
-  //     setStartDate(data.startDate);
-  //     setWorkoutHistory([...workoutHistory, data.workoutHistory]);
-  //   }
-  // }, [workoutHistory]);
-
   // Save data whenever it changes
   useEffect(() => {
     if (startDate) {
@@ -445,9 +435,7 @@ function App() {
     );
 
     setWorkoutDoneToday(isDone);
-
   }, [workoutHistory]);
-
 
   const startWorkout = () => {
     setStartTime(Date.now());
@@ -536,7 +524,6 @@ function App() {
     setWorkoutHistory((prev) => [...prev, newWorkout]);
     setWorkoutDoneToday(true);
   };
-
 
   const getDaysInMonth = (year, month) => {
     const date = new Date(year, month, 1);
@@ -684,7 +671,9 @@ function App() {
                 fontSize: "1.5em",
               }}
             >
-              ⚠️ TIME TO TRAIN TODAY!
+              {!workoutDoneToday
+                ? "⚠️ TIME TO TRAIN TODAY!"
+                : "💪 YOU HAVE DONE TODAY'S WORKOUT!"}
             </div>
           )}
 
