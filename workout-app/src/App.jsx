@@ -276,7 +276,13 @@ function App() {
   const [startTime, setStartTime] = useState(null);
 
   const [startDate, setStartDate] = useState(null);
-  const [workoutHistory, setWorkoutHistory] = useState([]);
+  const [workoutHistory, setWorkoutHistory] = useState([{
+    date: '2026-03-01',
+    completed: true,
+    week: 1,
+    exercisesDone: 6,
+    duration: 31
+}]);
   const [currentWeek, setCurrentWeek] = useState(1); // default
   const [haveTrainingToday, setHaveTrainingToday] = useState(true);
 
@@ -324,7 +330,7 @@ function App() {
     const dayOfWeekName = daysOfWeek[today.getDay()];
     return dayOfWeekName;
   }
-  
+
   const today = getToday();
   const weekType = currentWeekSubType();
 
@@ -358,7 +364,6 @@ function App() {
       }
     }
   }
-
 
   // Have workout today or not effect
   useEffect(() => {
@@ -510,6 +515,61 @@ function App() {
     setTimer(0);
   };
 
+  const getDaysInMonth = (year, month) => {
+    const date = new Date(year, month, 1); // from the first day of the month of the year
+    const days = [];
+    for (let i = 0; i < date.getDay(); i++) {
+      days.push(null);
+    }
+
+    while (date.getMonth() == month) {
+      days.push(new Date(date).toISOString().split("T")[0]);
+      date.setDate(date.getDate() + 1);
+    }
+    return days;
+  };
+
+  const renderCalendar = () => {
+    const now = new Date();
+    const monthDays = getDaysInMonth(now.getFullYear(), now.getMonth());
+    const monthName = now.toLocaleString("default", { month: "long" });
+
+    // Quick lookup for history
+    const historyDates = workoutHistory.map((h) => h.date);
+
+    return (
+      <div style={styles.calendarContainer}>
+        <h3 style={{ color: "#888", marginBottom: "15px" }}>
+          {monthName} {now.getFullYear()}
+        </h3>
+        <div style={styles.calendarGrid}>
+          {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
+            <div key={day} style={styles.dayHeader}>
+              {day}
+            </div>
+          ))}
+          {monthDays.map((date, i) => {
+            const isWorkoutDay = date && historyDates.includes(date);
+            const isToday = date === new Date().toISOString().split("T")[0];
+
+            return (
+              <div
+                key={i}
+                style={{
+                  ...styles.dayCell,
+                  ...(isWorkoutDay ? styles.workoutDay : {}),
+                  ...(isToday ? styles.todayCell : {}),
+                }}
+              >
+                {date ? new Date(date).getDate() : ""}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div style={styles.app}>
       {screen === "setup" && (
@@ -600,7 +660,7 @@ function App() {
             <strong style={{ color: "#00ff88" }}>{getNextWorkoutDay()}</strong>
           </div>
 
-          {/* TODO: Add calendar here */}
+          {renderCalendar()}
           {/* TODO: Add streak counter here */}
         </div>
       )}
@@ -907,6 +967,45 @@ const styles = {
     color: "#fff",
     marginBottom: "20px",
     cursor: "pointer",
+  },
+  calendarContainer: {
+    background: "#111",
+    padding: "20px",
+    borderRadius: "15px",
+    marginTop: "30px",
+    width: "100%",
+    maxWidth: "400px",
+  },
+  calendarGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(7, 1fr)",
+    gap: "8px",
+    textAlign: "center",
+  },
+  dayHeader: {
+    color: "#555",
+    fontSize: "0.8em",
+    fontWeight: "bold",
+    paddingBottom: "10px",
+  },
+  dayCell: {
+    aspectRatio: "1/1",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "0.9em",
+    borderRadius: "8px",
+    color: "#444", // Dim inactive days
+  },
+  workoutDay: {
+    background: "#00ff88",
+    color: "#000",
+    fontWeight: "bold",
+    boxShadow: "0 0 10px rgba(0, 255, 136, 0.3)",
+  },
+  todayCell: {
+    border: "2px solid #00ff88",
+    color: "#fff",
   },
 };
 
