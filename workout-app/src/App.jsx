@@ -282,6 +282,7 @@ function App() {
 
   const [currentWeek, setCurrentWeek] = useState(1); // default
   const [haveTrainingToday, setHaveTrainingToday] = useState(true);
+  const [workoutDoneToday, setWorkoutDoneToday] = useState(false);
 
   function getTodayDate() {
     return new Date().toISOString().split("T")[0];
@@ -402,14 +403,14 @@ function App() {
   }, [startDate]);
 
   // Load data on mount
-  useEffect(() => {
-    const saved = localStorage.getItem("workoutData");
-    if (saved) {
-      const data = JSON.parse(saved);
-      setStartDate(data.startDate);
-      setWorkoutHistory([...workoutHistory, data.workoutHistory]);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const saved = localStorage.getItem("workoutData");
+  //   if (saved) {
+  //     const data = JSON.parse(saved);
+  //     setStartDate(data.startDate);
+  //     setWorkoutHistory([...workoutHistory, data.workoutHistory]);
+  //   }
+  // }, [workoutHistory]);
 
   // Save data whenever it changes
   useEffect(() => {
@@ -421,6 +422,32 @@ function App() {
       localStorage.setItem("workoutData", JSON.stringify(data));
     }
   }, [startDate, workoutHistory]);
+
+  // set workoutDoneToday effect
+  useEffect(() => {
+    const saved = localStorage.getItem("workoutData");
+    if (saved) {
+      const data = JSON.parse(saved);
+      setStartDate(data.startDate);
+
+      // Safety check: Filter out any null/undefined entries immediately
+      const cleanHistory = (data.workoutHistory || []).filter(
+        (item) => item && item.date,
+      );
+      setWorkoutHistory(cleanHistory);
+    }
+  }, []);
+
+  useEffect(() => {
+    const todayStr = new Date().toISOString().split("T")[0];
+    const isDone = workoutHistory.some(
+      (w) => w && w.date && w.date.split("T")[0] === todayStr,
+    );
+
+    setWorkoutDoneToday(isDone);
+
+  }, [workoutHistory]);
+
 
   const startWorkout = () => {
     setStartTime(Date.now());
@@ -501,12 +528,15 @@ function App() {
       exercisesDone: exercises.length,
       duration: getDuration(),
     };
-    setWorkoutHistory([...workoutHistory, newWorkout]);
+    // setWorkoutHistory([...workoutHistory, newWorkout]);
     setScreen("dashboard");
     setCurrentExercise(0);
     setCurrentSet(0);
     setTimer(0);
+    setWorkoutHistory((prev) => [...prev, newWorkout]);
+    setWorkoutDoneToday(true);
   };
+
 
   const getDaysInMonth = (year, month) => {
     const date = new Date(year, month, 1);
@@ -658,7 +688,7 @@ function App() {
             </div>
           )}
 
-          {haveTrainingToday && (
+          {haveTrainingToday && !workoutDoneToday && (
             <button style={styles.btn} onClick={() => setScreen("start")}>
               🔥 START TODAY'S WORKOUT
             </button>
