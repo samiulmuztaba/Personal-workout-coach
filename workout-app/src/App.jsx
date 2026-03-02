@@ -268,14 +268,14 @@ function CancelCross() {
 }
 
 function App() {
-  const [screen, setScreen] = useState(""); // start, warmup, exercise, rest, ready, exerciseDone, done
+  const [screen, setScreen] = useState("dashboard"); // start, warmup, exercise, rest, ready, exerciseDone, done, dashboard etc
   const [currentExercise, setCurrentExercise] = useState(0);
   const [currentSet, setCurrentSet] = useState(0);
   const [timer, setTimer] = useState(0);
   const [countdown, setCountdown] = useState(3);
   const [startTime, setStartTime] = useState(null);
 
-  const [startDate, setStartDate] = useState(null);
+  const [startDate, setStartDate] = useState("2026-02-23");
   const [workoutHistory, setWorkoutHistory] = useState([]);
 
   const [viewDate, setViewDate] = useState(new Date());
@@ -392,15 +392,6 @@ function App() {
       setScreen("exercise");
     }
   }, [screen, countdown]);
-
-  useEffect(() => {
-    if (startDate) {
-      setCurrentWeek(calculateCurrentWeek());
-      setScreen("dashboard");
-    } else {
-      setScreen("setup");
-    }
-  }, [startDate]);
 
   // Save data whenever it changes
   useEffect(() => {
@@ -612,47 +603,6 @@ function App() {
 
   return (
     <div style={styles.app}>
-      {screen === "setup" && (
-        <div style={styles.screen}>
-          <h1 style={styles.title}>SETUP</h1>
-          <p style={styles.info}>When did you start training?</p>
-
-          <input
-            type="date"
-            style={styles.datePicker}
-            max={new Date().toISOString().split("T")[0]}
-            onChange={(e) => {
-              const selectedDate = e.target.value;
-              const dayOfWeek = new Date(selectedDate).getDay();
-
-              // Check if Mon (1), Wed (3), or Fri (5)
-              if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) {
-                setStartDate(selectedDate);
-              } else {
-                alert(
-                  "This program starts on Monday, Wednesday, or Friday only. Please pick one of those days.",
-                );
-                e.target.value = ""; // Clear the input
-              }
-            }}
-          />
-
-          <button
-            style={styles.btn}
-            onClick={() => {
-              if (startDate) {
-                setScreen("dashboard");
-              } else {
-                alert("Please select a date first!");
-              }
-            }}
-            disabled={!startDate}
-          >
-            START PROGRAM
-          </button>
-        </div>
-      )}
-
       {/* DASHBOARD SCREEN */}
       {screen === "dashboard" && (
         <div style={styles.screen}>
