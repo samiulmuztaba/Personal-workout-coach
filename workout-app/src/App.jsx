@@ -575,6 +575,8 @@ function App() {
     const historyDates = workoutHistory.map((h) => h.date);
     console.log(historyDates);
 
+    
+
     return (
       <div style={styles.calendarContainer}>
         <h3 style={{ color: "#888", marginBottom: "15px" }}>
@@ -589,10 +591,14 @@ function App() {
             </div>
           ))}
           {monthDays.map((date, i) => {
-            const isWorkoutDay = date && historyDates.includes(date);
+            let showZero = ''
+            if (date < 10) {
+              showZero = '0'
+            }
+            const isWorkoutDay = date && historyDates.includes(`${viewYear}-0${viewMonth+1}-${date < 10 && '0'}${date}`);
             const isToday = date == new Date().toISOString().split("T")[0].split('-')[2];
             console.log(new Date().toISOString().split('T')[0].split('-')[2])
-            console.log(date)
+            console.log(`${viewYear}-0${viewMonth}-${showZero}${date}`)
 
             return (
               <div
