@@ -346,14 +346,11 @@ function App() {
       ...daysOfWeek.slice(0, daysOfWeek.indexOf(today)),
     ];
 
-    console.log("The week in order from today", next_days_in_order);
     return next_days_in_order.filter((d) => workout_days.includes(d))[0] ===
       today
       ? next_days_in_order.filter((d) => workout_days.includes(d))[1]
       : next_days_in_order.filter((d) => workout_days.includes(d))[0];
   }
-
-  console.log("Next workout on", getNextWorkoutDay());
 
   function getCurrentExercises() {
     if (currentWeek <= 4) return EXERCISES_W1_W4;
@@ -373,7 +370,6 @@ function App() {
   // Have workout today or not effect
   useEffect(() => {
     if (WORKOUT_DAYS[weekType].includes(today)) {
-      console.log("Today is in workout_days for this week sub type");
       setHaveTrainingToday(true);
     } else setHaveTrainingToday(false);
   }, [weekType, today]);
@@ -521,15 +517,13 @@ function App() {
   };
 
   const getDaysInMonth = (year, month) => {
-    const date = new Date(year, month, 1); // DO NOT TOUCH THIS
+    const date = new Date(year, month, 1);
     const days = [];
 
-    // Pad BEFORE the month
     for (let i = 0; i < date.getDay(); i++) {
       days.push(null);
     }
 
-    // Move forward only
     while (date.getMonth() === month) {
       days.push(date.getDate());
       date.setDate(date.getDate() + 1);
@@ -538,40 +532,17 @@ function App() {
     return days;
   };
 
-  // const getDaysInMonth = (year, month) => {
-  //   const firstDayIndex = new Date(year, month, 1).getDay();
-  //   const totalDays = new Date(year, month + 1, 0).getDate();
-
-  //   const days = [];
-
-  //   // Add the "padding" slots
-  //   for (let i = 0; i < firstDayIndex; i++) {
-  //     days.push(null);
-  //   }
-
-  //   // Add the real days
-  //   for (let d = 1; d <= totalDays; d++) {
-  //     days.push(
-  //       `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`,
-  //     );
-  //   }
-
-  //   return days;
-  // };
-
   const renderCalendar = () => {
     const viewYear = viewDate.getFullYear();
     const viewMonth = viewDate.getMonth();
 
     const monthDays = getDaysInMonth(viewYear, viewMonth);
-    console.log(monthDays);
     const monthName = viewDate.toLocaleString("default", { month: "long" });
 
     const prevMonth = () => setViewDate(new Date(viewYear, viewMonth - 1, 1));
     const nextMonth = () => setViewDate(new Date(viewYear, viewMonth + 1, 1));
 
     const historyDates = workoutHistory.map((h) => h.date);
-    console.log(historyDates);
 
     return (
       <div style={styles.calendarContainer}>
@@ -607,12 +578,10 @@ function App() {
             const isWorkoutDay =
               date &&
               historyDates.includes(
-                `${viewYear}-0${viewMonth + 1}-${date < 10 && "0"}${date}`,
+                `${viewYear}-0${viewMonth + 1}-${date < 10 ? "0" : ""}${date}`,
               );
             const isToday =
               date == new Date().toISOString().split("T")[0].split("-")[2];
-            console.log(new Date().toISOString().split("T")[0].split("-")[2]);
-            console.log(`${viewYear}-0${viewMonth}-${showZero}${date}`);
 
             return (
               <div
