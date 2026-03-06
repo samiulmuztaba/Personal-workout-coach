@@ -319,7 +319,7 @@ function App() {
     0,
   );
   const completionRate = Math.round(
-    (workoutHistory.length / (currentWeek * 3)) * 100,
+    (workoutHistory.length / (currentWeek() * 3)) * 100,
   );
 
   function getTodayDate() {
@@ -327,8 +327,8 @@ function App() {
   }
 
   const currentWeekSubType = () => {
-    if (currentWeek <= 4) return "Weeks 1-4";
-    else if (currentWeek <= 8) return "Weeks 5-8";
+    if (currentWeek() <= 4) return "Weeks 1-4";
+    else if (currentWeek() <= 8) return "Weeks 5-8";
     else return "Weeks 9-12";
   };
 
@@ -365,8 +365,8 @@ function App() {
   }
 
   function getCurrentExercises() {
-    if (currentWeek <= 4) return EXERCISES_W1_W4;
-    else if (currentWeek <= 8) return EXERCISES_W5_W8;
+    if (currentWeek() <= 4) return EXERCISES_W1_W4;
+    else if (currentWeek() <= 8) return EXERCISES_W5_W8;
     else {
       const day = new Date().getDay();
       if (day === 1 || day === 4) {
@@ -533,7 +533,7 @@ function App() {
     const newWorkout = {
       id: new Date().toISOString(),
       date: getTodayDate(),
-      week: currentWeek,
+      week: currentWeek(),
       program: currentWeekSubType(),
       duration: getDuration(),
 
@@ -637,7 +637,7 @@ function App() {
       {screen === "dashboard" && (
         <div style={styles.screen}>
           <h1 style={styles.title}>WORKOUT COACH</h1>
-          <div style={styles.info}>Week {currentWeek} of 12</div>
+          <div style={styles.info}>Week {currentWeek()} of 12</div>
 
           <div style={styles.statsRow}>
             <div style={styles.statItem}>
@@ -709,11 +709,11 @@ function App() {
             <CancelCross />
           </span>
           <h1 style={styles.title}>WORKOUT COACH</h1>
-          <div style={styles.info}>Week {currentWeek} of 12</div>
+          <div style={styles.info}>Week {currentWeek()} of 12</div>
           <div style={styles.exerciseList}>
             <h2 style={styles.listTitle}>
-              Week {currentWeek} -{" "}
-              {currentWeek < 9 ? "Foundation" : "Building Strength"}
+              Week {currentWeek()} -{" "}
+              {currentWeek() < 9 ? "Foundation" : "Building Strength"}
             </h2>
             {exercises.map((ex, i) => (
               <div key={i} style={styles.exerciseItem}>
