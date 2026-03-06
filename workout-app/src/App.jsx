@@ -608,7 +608,7 @@ function App() {
             const isWorkoutDay =
               date &&
               historyDates.includes(
-                `${viewYear}-${viewMonth + 1}-${date < 10 ? "0" : ""}${date}`,
+                `${viewYear}-${(viewMonth + 1).toString().padStart(2, "0")}-${date.toString().padStart(2, "0")}`,
               );
             const isToday =
               date == new Date().toISOString().split("T")[0].split("-")[2];
