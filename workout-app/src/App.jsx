@@ -315,7 +315,8 @@ function App() {
     0,
   );
   const totalSetsPushed = workoutHistory.reduce(
-    (acc, curr) => acc + (curr.totalSets || 0),
+    (acc, curr) =>
+      acc + curr.exercises?.reduce((sum, ex) => sum + ex.sets.length, 0) || 0,
     0,
   );
   const completionRate = Math.round(
