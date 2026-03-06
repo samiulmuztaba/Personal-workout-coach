@@ -299,14 +299,14 @@ function App() {
   );
 
   // Calculate current week based on loaded startDate
-  const [currentWeek, setCurrentWeek] = useState(() => {
+  const currentWeek = () => {
     if (!initialData.startDate) return 1;
     const start = new Date(initialData.startDate);
     const today = new Date();
     const daysDiff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
     const weeksPassed = Math.floor(daysDiff / 7);
     return Math.min(weeksPassed + 1, 12);
-  });
+  };
   const [haveTrainingToday, setHaveTrainingToday] = useState(true);
   const [workoutDoneToday, setWorkoutDoneToday] = useState(false);
 
@@ -324,25 +324,6 @@ function App() {
 
   function getTodayDate() {
     return new Date().toISOString().split("T")[0];
-  }
-
-  function getDateDaysAgo(days) {
-    const date = new Date();
-    date.setDate(date.getDate() - days);
-    return date.toISOString().split("T")[0];
-  }
-
-  function calculateCurrentWeek() {
-    if (!startDate) return 1;
-
-    const start = new Date(startDate);
-    const today = new Date();
-    const daysDiff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-    const weeksPassed = Math.floor(daysDiff / 7);
-
-    const theoreticalWeek = Math.min(weeksPassed + 1, 12);
-
-    return theoreticalWeek;
   }
 
   const currentWeekSubType = () => {
@@ -624,10 +605,6 @@ function App() {
             </div>
           ))}
           {monthDays.map((date, i) => {
-            let showZero = "";
-            if (date < 10) {
-              showZero = "0";
-            }
             const isWorkoutDay =
               date &&
               historyDates.includes(
