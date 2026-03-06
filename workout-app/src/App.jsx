@@ -513,11 +513,6 @@ function App() {
     }
   };
 
-  const getDuration = () => {
-    if (!startTime) return 0;
-    return Math.round((Date.now() - startTime) / 60000);
-  };
-
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -531,12 +526,14 @@ function App() {
   };
 
   const finishWorkout = () => {
+    const finalDuration = startTime ? Math.round((Date.now() - startTime) / 60000) : 0;
+
     const newWorkout = {
       id: new Date().toISOString(),
       date: getTodayDate(),
       week: currentWeek(),
       program: currentWeekSubType(),
-      duration: getDuration(),
+      duration: finalDuration,
 
       exercises: exercises.map((ex) => ({
         name: ex.name,
