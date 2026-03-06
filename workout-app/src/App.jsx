@@ -284,6 +284,8 @@ function App() {
   const [haveTrainingToday, setHaveTrainingToday] = useState(true);
   const [workoutDoneToday, setWorkoutDoneToday] = useState(false);
 
+  const STORAGE_KEY = "workout_sessions";
+
   const totalMinutes = workoutHistory.reduce(
     (acc, curr) => acc + (curr.duration || 0),
     0,
@@ -416,7 +418,7 @@ function App() {
       workoutHistory,
     };
 
-    localStorage.setItem("workoutData", JSON.stringify(data));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }, [startDate, workoutHistory]);
 
   // Determine if today's workout is already done
@@ -429,6 +431,16 @@ function App() {
 
     setWorkoutDoneToday(isDone);
   }, [workoutHistory]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setStartDate(parsed.startDate);
+      setWorkoutHistory(parsed.workoutHistory || []);
+    }
+  }, []);
 
   const startWorkout = () => {
     setStartTime(Date.now());
@@ -503,16 +515,17 @@ function App() {
 
   const finishWorkout = () => {
     const newWorkout = {
-      id: new Date.toISOString(),
-      date: new Date().toISOString().split("T")[0],
+      id: new Date().toISOString(),
+      date: getTodayDate(),
       week: currentWeek,
-      type: currentWeekSubType(),
-      exercisesDone: exercises.length,
+      program: currentWeekSubType(),
       duration: getDuration(),
-      totalSets: totalSets,
-      completed: true,
+
+      exercises: exercises.map((ex) => ({
+        name: ex.name,
+        sets: Array.from({ length: ex.sets }, () => ({ completed: true })),
+      })),
     };
-    // setWorkoutHistory([...workoutHistory, newWorkout]);
     setScreen("dashboard");
     setCurrentExercise(0);
     setCurrentSet(0);
