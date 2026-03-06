@@ -284,6 +284,18 @@ function App() {
   const [haveTrainingToday, setHaveTrainingToday] = useState(true);
   const [workoutDoneToday, setWorkoutDoneToday] = useState(false);
 
+  const totalMinutes = workoutHistory.reduce(
+    (acc, curr) => acc + (curr.duration || 0),
+    0,
+  );
+  const totalSetsPushed = workoutHistory.reduce(
+    (acc, curr) => acc + (curr.totalSets || 0),
+    0,
+  );
+  const completionRate = Math.round(
+    (workoutHistory.length / (currentWeek * 3)) * 100,
+  );
+
   function getTodayDate() {
     return new Date().toISOString().split("T")[0];
   }
@@ -364,7 +376,9 @@ function App() {
   useEffect(() => {
     if (WORKOUT_DAYS[weekType].includes(today)) {
       setHaveTrainingToday(true);
-    } else setHaveTrainingToday(false);
+    } else {
+      setHaveTrainingToday(false);
+    }
   }, [weekType, today]);
 
   // Timer effect for rest
@@ -373,6 +387,7 @@ function App() {
       const interval = setInterval(() => {
         setTimer((prev) => prev - 1);
       }, 1000);
+
       return () => clearInterval(interval);
     } else if (screen === "rest" && timer === 0) {
       setCurrentSet((prev) => prev + 1);
@@ -387,6 +402,7 @@ function App() {
       const interval = setInterval(() => {
         setCountdown((prev) => prev - 1);
       }, 1000);
+
       return () => clearInterval(interval);
     } else if (screen === "ready" && countdown === 0) {
       setScreen("exercise");
@@ -395,34 +411,20 @@ function App() {
 
   // Save data whenever it changes
   useEffect(() => {
-    if (startDate) {
-      const data = {
-        startDate,
-        workoutHistory,
-      };
-      localStorage.setItem("workoutData", JSON.stringify(data));
-    }
+    const data = {
+      startDate,
+      workoutHistory,
+    };
+
+    localStorage.setItem("workoutData", JSON.stringify(data));
   }, [startDate, workoutHistory]);
 
-  // set workoutDoneToday effect
-  useEffect(() => {
-    const saved = localStorage.getItem("workoutData");
-    if (saved) {
-      const data = JSON.parse(saved);
-      setStartDate(data.startDate);
-
-      // Safety check: Filter out any null/undefined entries immediately
-      const cleanHistory = (data.workoutHistory || []).filter(
-        (item) => item && item.date,
-      );
-      setWorkoutHistory(cleanHistory);
-    }
-  }, []);
-
+  // Determine if today's workout is already done
   useEffect(() => {
     const todayStr = new Date().toISOString().split("T")[0];
+
     const isDone = workoutHistory.some(
-      (w) => w && w.date && w.date.split("T")[0] === todayStr,
+      (w) => w && w.date && w.date === todayStr,
     );
 
     setWorkoutDoneToday(isDone);
@@ -501,11 +503,14 @@ function App() {
 
   const finishWorkout = () => {
     const newWorkout = {
+      id: new Date.toISOString(),
       date: new Date().toISOString().split("T")[0],
-      completed: true,
       week: currentWeek,
+      type: currentWeekSubType(),
       exercisesDone: exercises.length,
       duration: getDuration(),
+      totalSets: totalSets,
+      completed: true,
     };
     // setWorkoutHistory([...workoutHistory, newWorkout]);
     setScreen("dashboard");
@@ -578,7 +583,7 @@ function App() {
             const isWorkoutDay =
               date &&
               historyDates.includes(
-                `${viewYear}-0${viewMonth + 1}-${date < 10 ? "0" : ""}${date}`,
+                `${viewYear}-${viewMonth + 1}-${date < 10 ? "0" : ""}${date}`,
               );
             const isToday =
               date == new Date().toISOString().split("T")[0].split("-")[2];
@@ -608,6 +613,21 @@ function App() {
         <div style={styles.screen}>
           <h1 style={styles.title}>WORKOUT COACH</h1>
           <div style={styles.info}>Week {currentWeek} of 12</div>
+
+          <div style={styles.statsRow}>
+            <div style={styles.statItem}>
+              <span style={styles.statLabel}>TOTAL TIME</span>
+              <span style={styles.statValue}>{totalMinutes}m</span>
+            </div>
+            <div style={styles.statItem}>
+              <span style={styles.statLabel}>VOLUME</span>
+              <span style={styles.statValue}>{totalSetsPushed} sets</span>
+            </div>
+            <div style={styles.statItem}>
+              <span style={styles.statLabel}>RELIABILITY</span>
+              <span style={styles.statValue}>{completionRate}%</span>
+            </div>
+          </div>
 
           {haveTrainingToday && (
             <div
@@ -1008,6 +1028,35 @@ const styles = {
     cursor: "pointer",
     fontSize: "1.2em",
     fontWeight: "bold",
+  },
+  statsRow: {
+    display: "flex",
+    gap: "20px",
+    justifyContent: "center",
+    margin: "20px 0",
+    width: "100%",
+    maxWidth: "450px",
+  },
+  statItem: {
+    background: "#111",
+    padding: "10px 15px",
+    borderRadius: "4px",
+    flex: 1,
+    textAlign: "center",
+    borderLeft: "2px solid #00ff88",
+  },
+  statLabel: {
+    display: "block",
+    fontSize: "9px",
+    color: "#555",
+    letterSpacing: "1px",
+    marginBottom: "4px",
+  },
+  statValue: {
+    fontSize: "1.2em",
+    fontWeight: "bold",
+    color: "#fff",
+    fontFamily: "monospace",
   },
 };
 
