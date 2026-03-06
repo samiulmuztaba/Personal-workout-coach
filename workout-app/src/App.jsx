@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 // Workout data
 const WARMUP_EXERCISES = [
@@ -267,24 +267,60 @@ function CancelCross() {
   );
 }
 
+const STORAGE_KEY = "workout_sessions";
+const loadInitialData = () => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch (err) {
+      console.error("Failed to parse:", err);
+    }
+  }
+  return { startDate: "2026-02-23", workoutHistory: [] };
+};
+
 function App() {
-  const [screen, setScreen] = useState("dashboard"); // start, warmup, exercise, rest, ready, exerciseDone, done, dashboard etc
+  // const [screen, setScreen] = useState("dashboard"); // start, warmup, exercise, rest, ready, exerciseDone, done, dashboard etc
+  // const [currentExercise, setCurrentExercise] = useState(0);
+  // const [currentSet, setCurrentSet] = useState(0);
+  // const [timer, setTimer] = useState(0);
+  // const [countdown, setCountdown] = useState(3);
+  // const [startTime, setStartTime] = useState(null);
+
+  // const [startDate, setStartDate] = useState("2026-02-23");
+  // const [workoutHistory, setWorkoutHistory] = useState([]);
+
+  const [viewDate, setViewDate] = useState(new Date());
+
+  // const [currentWeek, setCurrentWeek] = useState(1); // default
+
+  const initialData = loadInitialData();
+
+  const [screen, setScreen] = useState("dashboard");
   const [currentExercise, setCurrentExercise] = useState(0);
   const [currentSet, setCurrentSet] = useState(0);
   const [timer, setTimer] = useState(0);
   const [countdown, setCountdown] = useState(3);
   const [startTime, setStartTime] = useState(null);
 
-  const [startDate, setStartDate] = useState("2026-02-23");
-  const [workoutHistory, setWorkoutHistory] = useState([]);
+  // Initialize from loaded data
+  const [startDate, setStartDate] = useState(initialData.startDate);
+  const [workoutHistory, setWorkoutHistory] = useState(
+    initialData.workoutHistory,
+  );
 
-  const [viewDate, setViewDate] = useState(new Date());
-
-  const [currentWeek, setCurrentWeek] = useState(1); // default
+  // Calculate current week based on loaded startDate
+  const [currentWeek, setCurrentWeek] = useState(() => {
+    if (!initialData.startDate) return 1;
+    const start = new Date(initialData.startDate);
+    const today = new Date();
+    const daysDiff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+    const weeksPassed = Math.floor(daysDiff / 7);
+    return Math.min(weeksPassed + 1, 12);
+  });
   const [haveTrainingToday, setHaveTrainingToday] = useState(true);
   const [workoutDoneToday, setWorkoutDoneToday] = useState(false);
-
-  const STORAGE_KEY = "workout_sessions";
 
   const totalMinutes = workoutHistory.reduce(
     (acc, curr) => acc + (curr.duration || 0),
@@ -374,7 +410,9 @@ function App() {
     }
   }
 
-  // Have workout today or not effect
+  // ------------------- EFFECTS SECTION -------------------
+
+  // Determine if today is a workout day
   useEffect(() => {
     if (WORKOUT_DAYS[weekType].includes(today)) {
       setHaveTrainingToday(true);
@@ -383,13 +421,10 @@ function App() {
     }
   }, [weekType, today]);
 
-  // Timer effect for rest
+  // Timer effect for rest screen
   useEffect(() => {
     if (screen === "rest" && timer > 0) {
-      const interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
-
+      const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
       return () => clearInterval(interval);
     } else if (screen === "rest" && timer === 0) {
       setCurrentSet((prev) => prev + 1);
@@ -401,46 +436,58 @@ function App() {
   // Countdown effect for ready screen
   useEffect(() => {
     if (screen === "ready" && countdown > 0) {
-      const interval = setInterval(() => {
-        setCountdown((prev) => prev - 1);
-      }, 1000);
-
+      const interval = setInterval(
+        () => setCountdown((prev) => prev - 1),
+        1000,
+      );
       return () => clearInterval(interval);
     } else if (screen === "ready" && countdown === 0) {
       setScreen("exercise");
     }
   }, [screen, countdown]);
 
-  // Save data whenever it changes
-  useEffect(() => {
-    const data = {
-      startDate,
-      workoutHistory,
-    };
+  const isMounted = useRef(false);
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  // Persist to localStorage on changes, skip first render
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ startDate, workoutHistory }),
+    );
   }, [startDate, workoutHistory]);
+
+  // Load workout history on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        setStartDate(data.startDate || "2026-02-23");
+        const cleanHistory = (data.workoutHistory || []).filter(
+          (item) => item && item.date,
+        );
+        setWorkoutHistory(cleanHistory);
+      } catch (err) {
+        console.error(
+          "Failed to parse workout_sessions from localStorage:",
+          err,
+        );
+      }
+    }
+  }, []);
 
   // Determine if today's workout is already done
   useEffect(() => {
     const todayStr = new Date().toISOString().split("T")[0];
-
     const isDone = workoutHistory.some(
       (w) => w && w.date && w.date === todayStr,
     );
-
     setWorkoutDoneToday(isDone);
   }, [workoutHistory]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setStartDate(parsed.startDate);
-      setWorkoutHistory(parsed.workoutHistory || []);
-    }
-  }, []);
 
   const startWorkout = () => {
     setStartTime(Date.now());
