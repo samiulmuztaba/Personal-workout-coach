@@ -281,19 +281,7 @@ const loadInitialData = () => {
 };
 
 function App() {
-  // const [screen, setScreen] = useState("dashboard"); // start, warmup, exercise, rest, ready, exerciseDone, done, dashboard etc
-  // const [currentExercise, setCurrentExercise] = useState(0);
-  // const [currentSet, setCurrentSet] = useState(0);
-  // const [timer, setTimer] = useState(0);
-  // const [countdown, setCountdown] = useState(3);
-  // const [startTime, setStartTime] = useState(null);
-
-  // const [startDate, setStartDate] = useState("2026-02-23");
-  // const [workoutHistory, setWorkoutHistory] = useState([]);
-
   const [viewDate, setViewDate] = useState(new Date());
-
-  // const [currentWeek, setCurrentWeek] = useState(1); // default
 
   const initialData = loadInitialData();
 
