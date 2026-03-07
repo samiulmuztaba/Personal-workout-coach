@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
-// Workout data
+// ------------------------------- WORKOUT DATA --------------
 const WARMUP_EXERCISES = [
   "Jumping jacks - 30 seconds",
   "Arm circles - 20 each way",
@@ -226,6 +226,7 @@ const WORKOUT_DAYS = {
   "Weeks 9-12": ["Monday", "Wednesday", "Thursday", "Friday"],
 };
 
+// ------------------ HELPER STUFF! -------------------------
 function CancelCross() {
   return (
     <div
@@ -267,8 +268,8 @@ function CancelCross() {
   );
 }
 
-const STORAGE_KEY = "workout_sessions";
-const loadInitialData = () => {
+const STORAGE_KEY = "workout_sessions"; // to avoid typos or using different names for one thing :)
+const loadInitialData = () => { // to avoid overwriting data
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
     try {
@@ -281,11 +282,10 @@ const loadInitialData = () => {
 };
 
 function App() {
-  const [viewDate, setViewDate] = useState(new Date());
-
   const initialData = loadInitialData();
-
-  const [screen, setScreen] = useState("dashboard");
+  const [screen, setScreen] = useState("dashboard"); // different screens like: 'dashboard', 'warmup', 'exercise', 'ready',  'rest', 'exerciseDone', 'cool-down', 'done', 'start'
+  const [viewDate, setViewDate] = useState(new Date()); // For month/year view on calendar
+  
   const [currentExercise, setCurrentExercise] = useState(0);
   const [currentSet, setCurrentSet] = useState(0);
   const [timer, setTimer] = useState(0);
@@ -298,7 +298,7 @@ function App() {
     initialData.workoutHistory,
   );
 
-  // Calculate current week based on loaded startDate
+  // Calculate current week based on startDate
   const currentWeek = () => {
     if (!initialData.startDate) return 1;
     const start = new Date(initialData.startDate);
@@ -310,6 +310,7 @@ function App() {
   const [haveTrainingToday, setHaveTrainingToday] = useState(true);
   const [workoutDoneToday, setWorkoutDoneToday] = useState(false);
 
+  // Dashboard stats, taken from the workoutHistory
   const totalMinutes = workoutHistory.reduce(
     (acc, curr) => acc + (curr.duration || 0),
     0,
@@ -323,10 +324,12 @@ function App() {
     (workoutHistory.length / (currentWeek() * 3)) * 100,
   );
 
+  // return today's date as '2026-03-07'
   function getTodayDate() {
     return new Date().toISOString().split("T")[0];
   }
 
+  // As this is progresssive, the weeks are divided in 4. I guess this is self-explanatory 🤷‍♂️
   const currentWeekSubType = () => {
     if (currentWeek() <= 4) return "Weeks 1-4";
     else if (currentWeek() <= 8) return "Weeks 5-8";
@@ -349,10 +352,11 @@ function App() {
     return dayOfWeekName;
   }
 
+  // Prevent calling functions more than once
   const today = getToday();
   const weekType = currentWeekSubType();
 
-  function getNextWorkoutDay() {
+  function getNextWorkoutDay() { // this logic is proudly written by meee 😤
     const workout_days = WORKOUT_DAYS[weekType];
     const next_days_in_order = [
       ...daysOfWeek.slice(daysOfWeek.indexOf(today), 7),
@@ -459,6 +463,7 @@ function App() {
     setWorkoutDoneToday(isDone);
   }, [workoutHistory]);
 
+  // ------------- HELPER FUNCTIONS ------------------
   const startWorkout = () => {
     setStartTime(Date.now());
     setScreen("warmup");
@@ -513,7 +518,7 @@ function App() {
     }
   };
 
-  const formatTime = (seconds) => {
+  const formatTime = (seconds) => { // e.g, turn 75s to 1:15
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
@@ -532,7 +537,7 @@ function App() {
       id: new Date().toISOString(),
       date: getTodayDate(),
       week: currentWeek(),
-      program: currentWeekSubType(),
+      program: weekType,
       duration: finalDuration,
 
       exercises: exercises.map((ex) => ({
@@ -548,7 +553,7 @@ function App() {
     setWorkoutDoneToday(true);
   };
 
-  const getDaysInMonth = (year, month) => {
+  const getDaysInMonth = (year, month) => { // For rendering on calendar
     const date = new Date(year, month, 1);
     const days = [];
 
@@ -564,13 +569,14 @@ function App() {
     return days;
   };
 
-  const renderCalendar = () => {
+  const renderCalendar = () => { // yeah that's what I was talking about
     const viewYear = viewDate.getFullYear();
     const viewMonth = viewDate.getMonth();
 
     const monthDays = getDaysInMonth(viewYear, viewMonth);
     const monthName = viewDate.toLocaleString("default", { month: "long" });
 
+    // Navigation
     const prevMonth = () => setViewDate(new Date(viewYear, viewMonth - 1, 1));
     const nextMonth = () => setViewDate(new Date(viewYear, viewMonth + 1, 1));
 
@@ -631,6 +637,7 @@ function App() {
 
   return (
     <div style={styles.app}>
+      {/* Render based on screen state */}
       {/* DASHBOARD SCREEN */}
       {screen === "dashboard" && (
         <div style={styles.screen}>
@@ -696,7 +703,6 @@ function App() {
           </div>
 
           {renderCalendar()}
-          {/* TODO: Add streak counter here */}
         </div>
       )}
 
@@ -790,7 +796,7 @@ function App() {
                 ...(timer <= 10 ? styles.timerWarning : {}),
               }}
             >
-              {formatTime(timer)}
+              {formatTime(timer)} // remember me?
             </div>
             <div style={styles.info}>Next: Set {currentSet + 2}</div>
             <button style={styles.btnSecondary} onClick={skipRest}>
@@ -862,6 +868,7 @@ function App() {
   );
 }
 
+// --------- STYLES (yeah, obvious...¯\_(ツ)_/¯) ---------------
 const styles = {
   app: {
     minHeight: "100vh",
