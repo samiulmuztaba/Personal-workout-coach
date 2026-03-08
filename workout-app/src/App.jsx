@@ -221,7 +221,7 @@ const COOLDOWNS = {
 };
 
 const WORKOUT_DAYS = {
-  "Weeks 1-4": ["Monday", "Wednesday", "Friday"],
+  "Weeks 1-4": ["Monday", "Wednesday", "Friday", "Sunday"],
   "Weeks 5-8": ["Monday", "Wednesday", "Friday"],
   "Weeks 9-12": ["Monday", "Wednesday", "Thursday", "Friday"],
 };
@@ -416,6 +416,14 @@ function App() {
         () => setCountdown((prev) => prev - 1),
         1000,
       );
+      
+      if (countdown <= 3) {
+        const beep = new Audio(
+          "https://actions.google.com/sounds/v1/alarms/beep_short.ogg",
+        );
+        beep.play().catch(e => console.log("Failed to play audio", e));
+      }
+
       return () => clearInterval(interval);
     } else if (screen === "ready" && countdown === 0) {
       setScreen("exercise");
@@ -534,10 +542,8 @@ function App() {
   };
 
   const getDuration = () => {
-    return startTime
-      ? Math.round((Date.now() - startTime) / 60000)
-      : 0;
-  }
+    return startTime ? Math.round((Date.now() - startTime) / 60000) : 0;
+  };
 
   const finishWorkout = () => {
     const newWorkout = {
@@ -805,7 +811,7 @@ function App() {
                 ...(timer <= 10 ? styles.timerWarning : {}),
               }}
             >
-              {formatTime(timer)} // remember me?
+              {formatTime(timer)} {/* remember me? */}
             </div>
             <div style={styles.info}>Next: Set {currentSet + 2}</div>
             <button style={styles.btnSecondary} onClick={skipRest}>
