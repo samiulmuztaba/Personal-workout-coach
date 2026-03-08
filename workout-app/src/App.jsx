@@ -17,27 +17,27 @@ const EXERCISES_W1_W4 = [
     rest: 90,
     notes: "On knees if needed. Chest to floor, elbows 45°",
   },
-  // {
-  //   name: "SQUATS",
-  //   sets: 3,
-  //   reps: "10-12",
-  //   rest: 60,
-  //   notes: "Thighs parallel, chest up",
-  // },
-  // {
-  //   name: "INVERTED ROWS",
-  //   sets: 3,
-  //   reps: "5-8",
-  //   rest: 90,
-  //   notes: "Under table, pull chest to edge",
-  // },
-  // {
-  //   name: "GLUTE BRIDGES",
-  //   sets: 3,
-  //   reps: "12-15",
-  //   rest: 60,
-  //   notes: "Squeeze glutes for 2 seconds at top",
-  // },
+  {
+    name: "SQUATS",
+    sets: 3,
+    reps: "10-12",
+    rest: 60,
+    notes: "Thighs parallel, chest up",
+  },
+  {
+    name: "INVERTED ROWS",
+    sets: 3,
+    reps: "5-8",
+    rest: 90,
+    notes: "Under table, pull chest to edge",
+  },
+  {
+    name: "GLUTE BRIDGES",
+    sets: 3,
+    reps: "12-15",
+    rest: 60,
+    notes: "Squeeze glutes for 2 seconds at top",
+  },
   {
     name: "PLANK",
     sets: 2,
@@ -45,13 +45,13 @@ const EXERCISES_W1_W4 = [
     rest: 60,
     notes: "Straight line, don't sag",
   },
-  // {
-  //   name: "WALL SLIDES",
-  //   sets: 2,
-  //   reps: "10",
-  //   rest: 45,
-  //   notes: "Back flat against wall",
-  // },
+  {
+    name: "WALL SLIDES",
+    sets: 2,
+    reps: "10",
+    rest: 45,
+    notes: "Back flat against wall",
+  },
 ];
 
 const EXERCISES_W5_W8 = [
@@ -468,13 +468,13 @@ function App() {
   }, []);
 
   // Determine if today's workout is already done
-  // useEffect(() => {
-  //   const todayStr = new Date().toISOString().split("T")[0];
-  //   const isDone = workoutHistory.some(
-  //     (w) => w && w.date && w.date === todayStr,
-  //   );
-  //   setWorkoutDoneToday(isDone);
-  // }, [workoutHistory]);
+  useEffect(() => {
+    const todayStr = new Date().toISOString().split("T")[0];
+    const isDone = workoutHistory.some(
+      (w) => w && w.date && w.date === todayStr,
+    );
+    setWorkoutDoneToday(isDone);
+  }, [workoutHistory]);
 
   // ------------- HELPER FUNCTIONS ------------------
   const startWorkout = () => {
