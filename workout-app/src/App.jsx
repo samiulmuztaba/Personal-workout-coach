@@ -269,7 +269,8 @@ function CancelCross() {
 }
 
 const STORAGE_KEY = "workout_sessions"; // to avoid typos or using different names for one thing :)
-const loadInitialData = () => { // to avoid overwriting data
+const loadInitialData = () => {
+  // to avoid overwriting data
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
     try {
@@ -285,7 +286,7 @@ function App() {
   const initialData = loadInitialData();
   const [screen, setScreen] = useState("dashboard"); // different screens like: 'dashboard', 'warmup', 'exercise', 'ready',  'rest', 'exerciseDone', 'cool-down', 'done', 'start'
   const [viewDate, setViewDate] = useState(new Date()); // For month/year view on calendar
-  
+
   const [currentExercise, setCurrentExercise] = useState(0);
   const [currentSet, setCurrentSet] = useState(0);
   const [timer, setTimer] = useState(0);
@@ -356,7 +357,8 @@ function App() {
   const today = getToday();
   const weekType = currentWeekSubType();
 
-  function getNextWorkoutDay() { // this logic is proudly written by meee 😤
+  function getNextWorkoutDay() {
+    // this logic is proudly written by meee 😤
     const workout_days = WORKOUT_DAYS[weekType];
     const next_days_in_order = [
       ...daysOfWeek.slice(daysOfWeek.indexOf(today), 7),
@@ -518,7 +520,8 @@ function App() {
     }
   };
 
-  const formatTime = (seconds) => { // e.g, turn 75s to 1:15
+  const formatTime = (seconds) => {
+    // e.g, turn 75s to 1:15
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
@@ -530,15 +533,19 @@ function App() {
     setScreen("done");
   };
 
-  const finishWorkout = () => {
-    const finalDuration = startTime ? Math.round((Date.now() - startTime) / 60000) : 0;
+  const getDuration = () => {
+    return startTime
+      ? Math.round((Date.now() - startTime) / 60000)
+      : 0;
+  }
 
+  const finishWorkout = () => {
     const newWorkout = {
       id: new Date().toISOString(),
       date: getTodayDate(),
       week: currentWeek(),
       program: weekType,
-      duration: finalDuration,
+      duration: getDuration(),
 
       exercises: exercises.map((ex) => ({
         name: ex.name,
@@ -553,7 +560,8 @@ function App() {
     setWorkoutDoneToday(true);
   };
 
-  const getDaysInMonth = (year, month) => { // For rendering on calendar
+  const getDaysInMonth = (year, month) => {
+    // For rendering on calendar
     const date = new Date(year, month, 1);
     const days = [];
 
@@ -569,7 +577,8 @@ function App() {
     return days;
   };
 
-  const renderCalendar = () => { // yeah that's what I was talking about
+  const renderCalendar = () => {
+    // yeah that's what I was talking about
     const viewYear = viewDate.getFullYear();
     const viewMonth = viewDate.getMonth();
 
