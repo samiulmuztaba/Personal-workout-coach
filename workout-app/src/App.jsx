@@ -24,34 +24,34 @@ const EXERCISES_W1_W4 = [
     rest: 60,
     notes: "Thighs parallel, chest up",
   },
-  {
-    name: "INVERTED ROWS",
-    sets: 3,
-    reps: "5-8",
-    rest: 90,
-    notes: "Under table, pull chest to edge",
-  },
-  {
-    name: "GLUTE BRIDGES",
-    sets: 3,
-    reps: "12-15",
-    rest: 60,
-    notes: "Squeeze glutes for 2 seconds at top",
-  },
-  {
-    name: "PLANK",
-    sets: 2,
-    reps: "75s or more/less",
-    rest: 60,
-    notes: "Straight line, don't sag",
-  },
-  {
-    name: "WALL SLIDES",
-    sets: 2,
-    reps: "10",
-    rest: 45,
-    notes: "Back flat against wall",
-  },
+  // {
+  //   name: "INVERTED ROWS",
+  //   sets: 3,
+  //   reps: "5-8",
+  //   rest: 90,
+  //   notes: "Under table, pull chest to edge",
+  // },
+  // {
+  //   name: "GLUTE BRIDGES",
+  //   sets: 3,
+  //   reps: "12-15",
+  //   rest: 60,
+  //   notes: "Squeeze glutes for 2 seconds at top",
+  // },
+  // {
+  //   name: "PLANK",
+  //   sets: 2,
+  //   reps: "75s or more/less",
+  //   rest: 60,
+  //   notes: "Straight line, don't sag",
+  // },
+  // {
+  //   name: "WALL SLIDES",
+  //   sets: 2,
+  //   reps: "10",
+  //   rest: 45,
+  //   notes: "Back flat against wall",
+  // },
 ];
 
 const EXERCISES_W5_W8 = [
@@ -289,6 +289,8 @@ function App() {
 
   const [currentExercise, setCurrentExercise] = useState(0);
   const [currentSet, setCurrentSet] = useState(0);
+  const [loggedReps, setLoggedReps] = useState(0);
+  const [sessionData, setSessionData] = useState([]);
   const [timer, setTimer] = useState(0);
   const [countdown, setCountdown] = useState(3);
   const [startTime, setStartTime] = useState(null);
@@ -318,7 +320,7 @@ function App() {
   );
   const totalSetsPushed = workoutHistory.reduce(
     (acc, curr) =>
-      acc + curr.exercises?.reduce((sum, ex) => sum + ex.sets.length, 0) || 0,
+      acc + curr.exercises?.reduce((sum, ex) => sum + ex.setsLogged.length, 0) || 0,
     0,
   );
   const completionRate = Math.round(
@@ -416,12 +418,12 @@ function App() {
         () => setCountdown((prev) => prev - 1),
         1000,
       );
-      
+
       if (countdown <= 3) {
         const beep = new Audio(
           "https://actions.google.com/sounds/v1/alarms/beep_short.ogg",
         );
-        beep.play().catch(e => console.log("Failed to play audio", e));
+        beep.play().catch((e) => console.log("Failed to play audio", e));
       }
 
       return () => clearInterval(interval);
@@ -465,13 +467,20 @@ function App() {
   }, []);
 
   // Determine if today's workout is already done
+  // useEffect(() => {
+  //   const todayStr = new Date().toISOString().split("T")[0];
+  //   const isDone = workoutHistory.some(
+  //     (w) => w && w.date && w.date === todayStr,
+  //   );
+  //   setWorkoutDoneToday(isDone);
+  // }, [workoutHistory]);
+
+  // check updated session data
   useEffect(() => {
-    const todayStr = new Date().toISOString().split("T")[0];
-    const isDone = workoutHistory.some(
-      (w) => w && w.date && w.date === todayStr,
-    );
-    setWorkoutDoneToday(isDone);
-  }, [workoutHistory]);
+    if (sessionData.length > 0) {
+      console.log("Updated Session Data:", sessionData);
+    }
+  }, [sessionData]);
 
   // ------------- HELPER FUNCTIONS ------------------
   const startWorkout = () => {
@@ -488,9 +497,14 @@ function App() {
   const exercises = getCurrentExercises();
   const completeSet = () => {
     const ex = exercises[currentExercise];
+    setSessionData((prev) => [
+      ...prev,
+      { exerciseName: ex.name, setNumber: currentSet, reps: loggedReps },
+    ]);
     if (currentSet < ex.sets - 1) {
       setTimer(ex.rest);
       setScreen("rest");
+      setLoggedReps(0);
     } else {
       setScreen("exerciseDone");
     }
@@ -546,18 +560,24 @@ function App() {
   };
 
   const finishWorkout = () => {
+    const completedExercises = exercises.map((ex) => {
+      return {
+        name: ex.name,
+        setsLogged: sessionData
+          .filter((e) => e.exerciseName == ex.name)
+          .map((e) => e.reps), // to get the reps like [5, 8, 9]
+      };
+    });
+    console.log(completedExercises)
     const newWorkout = {
       id: new Date().toISOString(),
       date: getTodayDate(),
       week: currentWeek(),
       program: weekType,
       duration: getDuration(),
-
-      exercises: exercises.map((ex) => ({
-        name: ex.name,
-        sets: Array.from({ length: ex.sets }, () => ({ completed: true })),
-      })),
+      exercises: completedExercises,
     };
+
     setScreen("dashboard");
     setCurrentExercise(0);
     setCurrentSet(0);
@@ -785,6 +805,36 @@ function App() {
               {exercises[currentExercise].reps} reps
             </div>
             <div style={styles.info}>{exercises[currentExercise].notes}</div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "cetner",
+                gap: "20px",
+              }}
+            >
+              <div style={{ ...styles.info, margin: "0" }}>
+                How many reps was that?
+              </div>
+              <div style={{ ...styles.repsTarget, margin: "0" }}>
+                {loggedReps}
+              </div>
+              <div
+                style={{ display: "flex", gap: "4px", justifySelf: "center" }}
+              >
+                <p>5</p>
+                <input
+                  type="range"
+                  value={loggedReps}
+                  min={5}
+                  max={20}
+                  onChange={(e) => setLoggedReps(e.target.value)}
+                />
+                <p>20</p>
+              </div>
+            </div>
+
             <button style={styles.btn} onClick={completeSet}>
               SET COMPLETE
             </button>
