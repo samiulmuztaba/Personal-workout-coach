@@ -17,13 +17,13 @@ const EXERCISES_W1_W4 = [
     rest: 90,
     notes: "On knees if needed. Chest to floor, elbows 45°",
   },
-  {
-    name: "SQUATS",
-    sets: 3,
-    reps: "10-12",
-    rest: 60,
-    notes: "Thighs parallel, chest up",
-  },
+  // {
+  //   name: "SQUATS",
+  //   sets: 3,
+  //   reps: "10-12",
+  //   rest: 60,
+  //   notes: "Thighs parallel, chest up",
+  // },
   // {
   //   name: "INVERTED ROWS",
   //   sets: 3,
@@ -38,13 +38,13 @@ const EXERCISES_W1_W4 = [
   //   rest: 60,
   //   notes: "Squeeze glutes for 2 seconds at top",
   // },
-  // {
-  //   name: "PLANK",
-  //   sets: 2,
-  //   reps: "75s or more/less",
-  //   rest: 60,
-  //   notes: "Straight line, don't sag",
-  // },
+  {
+    name: "PLANK",
+    sets: 2,
+    reps: "75s or more/less",
+    rest: 60,
+    notes: "Straight line, don't sag",
+  },
   // {
   //   name: "WALL SLIDES",
   //   sets: 2,
@@ -320,7 +320,8 @@ function App() {
   );
   const totalSetsPushed = workoutHistory.reduce(
     (acc, curr) =>
-      acc + curr.exercises?.reduce((sum, ex) => sum + ex.setsLogged.length, 0) || 0,
+      acc +
+        curr.exercises?.reduce((sum, ex) => sum + ex.setsLogged.length, 0) || 0,
     0,
   );
   const completionRate = Math.round(
@@ -475,13 +476,6 @@ function App() {
   //   setWorkoutDoneToday(isDone);
   // }, [workoutHistory]);
 
-  // check updated session data
-  useEffect(() => {
-    if (sessionData.length > 0) {
-      console.log("Updated Session Data:", sessionData);
-    }
-  }, [sessionData]);
-
   // ------------- HELPER FUNCTIONS ------------------
   const startWorkout = () => {
     setStartTime(Date.now());
@@ -568,7 +562,6 @@ function App() {
           .map((e) => e.reps), // to get the reps like [5, 8, 9]
       };
     });
-    console.log(completedExercises)
     const newWorkout = {
       id: new Date().toISOString(),
       date: getTodayDate(),
@@ -668,6 +661,39 @@ function App() {
         </div>
       </div>
     );
+  };
+
+  const exerciseConfig = {
+    // --- REPS-BASED EXERCISES ---
+    // Phase: Weeks 1-4
+    "PUSH-UPS": { unit: "reps", min: 5, max: 8 },
+    SQUATS: { unit: "reps", min: 10, max: 12 },
+    "INVERTED ROWS": { unit: "reps", min: 5, max: 8 },
+    "GLUTE BRIDGES": { unit: "reps", min: 12, max: 15 },
+    "WALL SLIDES": { unit: "reps", min: 10, max: 10 },
+
+    // Phase: Weeks 5-8
+    "GOBLET SQUATS": { unit: "reps", min: 10, max: 12, weight: "2-5kg" },
+    "SINGLE-LEG GLUTES BRIDGES": { unit: "reps", min: 8, max: 10 },
+
+    // Phase: Weeks 9-12
+    "PUSH-UPS (tempo 3-0-1)": { unit: "reps", min: 10, max: 15 },
+    "PIKE PUSH-UPS": { unit: "reps", min: 6, max: 10 },
+    "BULGARIAN SPLIT SQUATS": { unit: "reps", min: 8, max: 10, perSide: true },
+    "LOADED SQUATS": { unit: "reps", min: 12, max: 15, weight: "5-8kg" },
+    "CALF RAISES": { unit: "reps", min: 15, max: 20 },
+    "PLANK TO DOWN-DOG": { unit: "reps", min: 10, max: 10 },
+    "BACKPACK ROWS": { unit: "reps", min: 12, max: 15, weight: "5-8kg" },
+    "REVERSE SNOW ANGELS": { unit: "reps", min: 12, max: 15 },
+    "SINGLE-LEG RDLs": { unit: "reps", min: 8, max: 10, perSide: true },
+    "BICYCLE CRUNCHES": { unit: "reps", min: 20, max: 30 },
+    "BIRD DOGS": { unit: "reps", min: 10, max: 10, perSide: true },
+
+    // --- TIME-BASED EXERCISES (Seconds) ---
+    PLANK: { unit: "sec", min: 60, max: 75 },
+    "SIDE PLANK": { unit: "sec", min: 20, max: 30, perSide: true },
+    "SUPERMAN HOLDS": { unit: "sec", min: 15, max: 20 },
+    "DEAD HANGS": { unit: "sec", min: 20, max: 45 },
   };
 
   return (
@@ -815,23 +841,27 @@ function App() {
               }}
             >
               <div style={{ ...styles.info, margin: "0" }}>
-                How many reps was that?
+                How{" "}
+                {exerciseConfig[exercises[currentExercise].name].unit == "kg"
+                  ? "much"
+                  : "many"}{" "}
+                {exerciseConfig[exercises[currentExercise].name].unit} was that?
               </div>
               <div style={{ ...styles.repsTarget, margin: "0" }}>
-                {loggedReps}
+                {loggedReps > 0 ? loggedReps : exerciseConfig[exercises[currentExercise].name].min}
               </div>
               <div
                 style={{ display: "flex", gap: "4px", justifySelf: "center" }}
               >
-                <p>5</p>
+                <p>{exerciseConfig[exercises[currentExercise].name].min}</p>
                 <input
                   type="range"
-                  value={loggedReps}
-                  min={5}
-                  max={20}
+                  value={exerciseConfig[exercises[currentExercise].name].min}
+                  min={exerciseConfig[exercises[currentExercise].name].min}
+                  max={exerciseConfig[exercises[currentExercise].name].max}
                   onChange={(e) => setLoggedReps(e.target.value)}
                 />
-                <p>20</p>
+                <p>{exerciseConfig[exercises[currentExercise].name].max}</p>
               </div>
             </div>
 
