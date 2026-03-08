@@ -653,6 +653,11 @@ function App() {
                   ...(isWorkoutDay ? styles.workoutDay : {}),
                   ...(isToday ? styles.todayCell : {}),
                 }}
+                title={
+                  !isWorkoutDay
+                    ? "no workout data for this day"
+                    : "click for details"
+                }
               >
                 {date}
               </div>
@@ -662,6 +667,24 @@ function App() {
       </div>
     );
   };
+
+  const sessionLog = (date) => {
+    const data = workoutHistory.filter((h) => h.date == date)[0].exercises
+    console.log(data);
+
+    return (
+      <>
+        {data.map(e => (
+          <div>
+            <h1>{e.name}</h1>
+            <p>Set 1: {e.setsLogged[0]}</p>
+          </div>
+        ))}
+      </>
+    )
+  };
+
+  
 
   const exerciseConfig = {
     // --- REPS-BASED EXERCISES ---
@@ -764,6 +787,7 @@ function App() {
           </div>
 
           {renderCalendar()}
+          {sessionLog('2026-02-23')}
         </div>
       )}
 
@@ -848,7 +872,9 @@ function App() {
                 {exerciseConfig[exercises[currentExercise].name].unit} was that?
               </div>
               <div style={{ ...styles.repsTarget, margin: "0" }}>
-                {loggedReps > 0 ? loggedReps : exerciseConfig[exercises[currentExercise].name].min}
+                {loggedReps > 0
+                  ? loggedReps
+                  : exerciseConfig[exercises[currentExercise].name].min}
               </div>
               <div
                 style={{ display: "flex", gap: "4px", justifySelf: "center" }}
@@ -1133,6 +1159,7 @@ const styles = {
     fontSize: "0.9em",
     borderRadius: "8px",
     color: "#444", // Dim inactive days
+    cursor: "pointer",
   },
   workoutDay: {
     background: "#00ff88",
