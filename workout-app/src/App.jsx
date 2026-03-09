@@ -295,6 +295,9 @@ function App() {
   const [countdown, setCountdown] = useState(3);
   const [startTime, setStartTime] = useState(null);
 
+  const [showSessionLog, setShowSessionLog] = useState(false);
+  const [sessionLogDate, setSessionLogDate] = useState("");
+
   // Initialize from loaded data
   const [startDate, setStartDate] = useState(initialData.startDate);
   const [workoutHistory, setWorkoutHistory] = useState(
@@ -637,13 +640,14 @@ function App() {
             </div>
           ))}
           {monthDays.map((date, i) => {
+            const dateFormat = `${viewYear}-${(viewMonth + 1).toString().padStart(2, "0")}-${date.toString().padStart(2, "0")}`
             const isWorkoutDay =
               date &&
               historyDates.includes(
-                `${viewYear}-${(viewMonth + 1).toString().padStart(2, "0")}-${date.toString().padStart(2, "0")}`,
+                dateFormat,
               );
             const isToday =
-              date == new Date().toISOString().split("T")[0].split("-")[2];
+              dateFormat == new Date().toISOString().split("T")[0]
 
             return (
               <div
@@ -658,6 +662,10 @@ function App() {
                     ? "no workout data for this day"
                     : "click for details"
                 }
+                onClick={() => {
+                  setShowSessionLog((prev) => !prev);
+                  setSessionLogDate(dateFormat);
+                }}
               >
                 {date}
               </div>
@@ -669,22 +677,20 @@ function App() {
   };
 
   const sessionLog = (date) => {
-    const data = workoutHistory.filter((h) => h.date == date)[0].exercises
+    const data = workoutHistory.filter((h) => h.date == date)[0].exercises;
     console.log(data);
 
     return (
       <>
-        {data.map(e => (
+        {data.map((e) => (
           <div>
             <h1>{e.name}</h1>
             <p>Set 1: {e.setsLogged[0]}</p>
           </div>
         ))}
       </>
-    )
+    );
   };
-
-  
 
   const exerciseConfig = {
     // --- REPS-BASED EXERCISES ---
@@ -787,7 +793,7 @@ function App() {
           </div>
 
           {renderCalendar()}
-          {sessionLog('2026-02-23')}
+          {sessionLog("2026-02-23")}
         </div>
       )}
 
