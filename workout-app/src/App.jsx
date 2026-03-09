@@ -896,6 +896,7 @@ function App() {
       {/* WARMUP SCREEN */}
       {screen === "warmup" && (
         <div style={styles.screen}>
+          <CancelCross/>
           <h1 style={styles.title}>WARM UP</h1>
           <div style={styles.exerciseList}>
             {WARMUP_EXERCISES.map((ex, i) => (
@@ -959,7 +960,7 @@ function App() {
                 <p>{exerciseConfig[exercises[currentExercise].name].min}</p>
                 <input
                   type="range"
-                  value={exerciseConfig[exercises[currentExercise].name].min}
+                  value={loggedReps}
                   min={exerciseConfig[exercises[currentExercise].name].min}
                   max={exerciseConfig[exercises[currentExercise].name].max}
                   onChange={(e) => setLoggedReps(e.target.value)}
