@@ -1226,6 +1226,7 @@ const styles = {
     gridTemplateColumns: "repeat(7, 1fr)",
     gap: "8px",
     textAlign: "center",
+    marginTop: '16px'
   },
   dayHeader: {
     color: "#555",
