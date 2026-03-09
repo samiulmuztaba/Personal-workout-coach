@@ -1325,7 +1325,7 @@ const styles = {
     background: "#111", // Dark card background
     padding: "30px 20px",
     borderRadius: "20px",
-    width: "280px", // Keeping it "shrinked" as requested
+    width: "280px", 
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -1357,7 +1357,7 @@ const styles = {
   modernSlider: {
     flex: 1,
     cursor: "pointer",
-    accentColor: "#00ff88", // The green slider handle
+    accentColor: "#00ff88",
     height: "6px",
     borderRadius: "5px",
   },
@@ -1368,7 +1368,7 @@ const styles = {
     minWidth: "30px",
   },
   confirmBtn: {
-    width: "280px", // Matches inputSection width for alignment
+    width: "280px",
     background: "#00ff88",
     color: "#000",
     border: "none",
@@ -1377,7 +1377,7 @@ const styles = {
     fontSize: "1.2rem",
     fontWeight: "800",
     cursor: "pointer",
-    marginTop: "10px", // Spacing from the input card
+    marginTop: "10px", 
   },
 };
 
