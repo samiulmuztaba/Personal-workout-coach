@@ -896,7 +896,7 @@ function App() {
       {/* WARMUP SCREEN */}
       {screen === "warmup" && (
         <div style={styles.screen}>
-          <CancelCross/>
+          <CancelCross />
           <h1 style={styles.title}>WARM UP</h1>
           <div style={styles.exerciseList}>
             {WARMUP_EXERCISES.map((ex, i) => (
@@ -930,47 +930,49 @@ function App() {
               Set {currentSet + 1} of {exercises[currentExercise].sets}
             </h2>
             <div style={styles.repsTarget}>
-              {exercises[currentExercise].reps} reps
+              GOAL: {exercises[currentExercise].reps}{" "}
+              {exerciseConfig[
+                exercises[currentExercise].name
+              ].unit.toUpperCase()}
             </div>
             <div style={styles.info}>{exercises[currentExercise].notes}</div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "cetner",
-                gap: "20px",
-              }}
-            >
-              <div style={{ ...styles.info, margin: "0" }}>
-                How{" "}
-                {exerciseConfig[exercises[currentExercise].name].unit == "kg"
-                  ? "much"
-                  : "many"}{" "}
-                {exerciseConfig[exercises[currentExercise].name].unit} was that?
+            <div style={styles.inputSection}>
+              <div style={styles.inputLabel}>
+                HOW MANY{" "}
+                {exerciseConfig[
+                  exercises[currentExercise].name
+                ]?.unit.toUpperCase()}
+                ?
               </div>
-              <div style={{ ...styles.repsTarget, margin: "0" }}>
+              <div style={styles.hugeValueDisplay}>
                 {loggedReps > 0
                   ? loggedReps
                   : exerciseConfig[exercises[currentExercise].name].min}
               </div>
-              <div
-                style={{ display: "flex", gap: "4px", justifySelf: "center" }}
-              >
-                <p>{exerciseConfig[exercises[currentExercise].name].min}</p>
+
+              <div style={styles.sliderContainer}>
+                <span style={styles.sliderLimit}>
+                  {exerciseConfig[exercises[currentExercise].name].min}
+                </span>
                 <input
                   type="range"
-                  value={loggedReps}
+                  style={styles.modernSlider}
+                  value={
+                    loggedReps ||
+                    exerciseConfig[exercises[currentExercise].name].min
+                  }
                   min={exerciseConfig[exercises[currentExercise].name].min}
-                  max={exerciseConfig[exercises[currentExercise].name].max}
-                  onChange={(e) => setLoggedReps(e.target.value)}
+                  max={exerciseConfig[exercises[currentExercise].name].max + 5} // Give some room for overachieving!
+                  onChange={(e) => setLoggedReps(parseInt(e.target.value))}
                 />
-                <p>{exerciseConfig[exercises[currentExercise].name].max}</p>
+                <span style={styles.sliderLimit}>
+                  {exerciseConfig[exercises[currentExercise].name].max}+
+                </span>
               </div>
             </div>
 
-            <button style={styles.btn} onClick={completeSet}>
-              SET COMPLETE
+            <button style={styles.confirmBtn} onClick={completeSet}>
+              COMPLETE SET
             </button>
           </div>
         </div>
@@ -1100,16 +1102,17 @@ const styles = {
     marginBottom: "20px",
   },
   repsTarget: {
-    fontSize: "5em",
-    fontWeight: "800",
-    margin: "40px 0",
+    fontSize: "1.5rem", // Slightly smaller to keep focus on the exercise name
+    fontWeight: "700",
+    color: "#888", // Subtle color for the "Goal" text
+    marginBottom: "10px",
   },
   info: {
-    fontSize: "1.5em",
+    fontSize: "1.1rem",
     color: "#aaa",
-    marginBottom: "40px",
-    maxWidth: "700px",
-    lineHeight: "1.6",
+    marginBottom: "30px",
+    maxWidth: "320px", // Keeps notes from stretching too wide
+    lineHeight: "1.4",
   },
   exerciseList: {
     background: "#111",
@@ -1194,10 +1197,12 @@ const styles = {
     fontWeight: "600",
   },
   contentWithHeader: {
-    marginTop: "100px",
+    marginTop: "80px", // Pushes content down to avoid the fixed progress bar
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    width: "100%",
+    textAlign: "center",
   },
   datePicker: {
     padding: "15px 20px",
@@ -1315,6 +1320,64 @@ const styles = {
     color: "#888",
     fontSize: "20px",
     cursor: "pointer",
+  },
+  inputSection: {
+    background: "#111", // Dark card background
+    padding: "30px 20px",
+    borderRadius: "20px",
+    width: "280px", // Keeping it "shrinked" as requested
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    marginBottom: "30px",
+    border: "1px solid #222",
+  },
+  inputLabel: {
+    fontSize: "0.8rem",
+    color: "#666",
+    letterSpacing: "1px",
+    marginBottom: "10px",
+    fontWeight: "600",
+  },
+  hugeValueDisplay: {
+    fontSize: "6em", // Big and bold for the focus
+    fontWeight: "900",
+    color: "#00ff88",
+    margin: "10px 0",
+    lineHeight: "1",
+  },
+  sliderContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "15px",
+    width: "100%",
+    marginTop: "10px",
+  },
+  modernSlider: {
+    flex: 1,
+    cursor: "pointer",
+    accentColor: "#00ff88", // The green slider handle
+    height: "6px",
+    borderRadius: "5px",
+  },
+  sliderLimit: {
+    color: "#444",
+    fontWeight: "bold",
+    fontSize: "1rem",
+    minWidth: "30px",
+  },
+  confirmBtn: {
+    width: "280px", // Matches inputSection width for alignment
+    background: "#00ff88",
+    color: "#000",
+    border: "none",
+    padding: "18px",
+    borderRadius: "15px",
+    fontSize: "1.2rem",
+    fontWeight: "800",
+    cursor: "pointer",
+    marginTop: "10px", // Spacing from the input card
   },
 };
 
