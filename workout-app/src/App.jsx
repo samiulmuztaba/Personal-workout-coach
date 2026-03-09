@@ -221,7 +221,7 @@ const COOLDOWNS = {
 };
 
 const WORKOUT_DAYS = {
-  "Weeks 1-4": ["Monday", "Wednesday", "Friday", "Sunday"],
+  "Weeks 1-4": ["Monday", "Wednesday", "Friday"],
   "Weeks 5-8": ["Monday", "Wednesday", "Friday"],
   "Weeks 9-12": ["Monday", "Wednesday", "Thursday", "Friday"],
 };
@@ -620,7 +620,6 @@ function App() {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: "20px",
           }}
         >
           <button onClick={prevMonth} style={styles.navBtn}>
@@ -640,14 +639,10 @@ function App() {
             </div>
           ))}
           {monthDays.map((date, i) => {
-            const dateFormat = `${viewYear}-${(viewMonth + 1).toString().padStart(2, "0")}-${date.toString().padStart(2, "0")}`
-            const isWorkoutDay =
-              date &&
-              historyDates.includes(
-                dateFormat,
-              );
+            const dateFormat = `${viewYear}-${(viewMonth + 1).toString().padStart(2, "0")}-${date.toString().padStart(2, "0")}`;
+            const isWorkoutDay = date && historyDates.includes(dateFormat);
             const isToday =
-              dateFormat == new Date().toISOString().split("T")[0]
+              dateFormat == new Date().toISOString().split("T")[0];
 
             return (
               <div
@@ -676,19 +671,85 @@ function App() {
     );
   };
 
-  const sessionLog = (date) => {
-    const data = workoutHistory.filter((h) => h.date == date)[0].exercises;
-    console.log(data);
+  const renderSessionRecap = (date) => {
+    // Find the specific workout for this date
+    const workout = workoutHistory.find((h) => h.date === date);
+
+    // If no workout, show a friendly empty state
+    if (!workout) {
+      return (
+        <div style={styles.recapContainer}>
+          <h2 style={{ color: "#888" }}>No data for {date}</h2>
+          <p style={{ color: "#555" }}>Keep pushing! 💪</p>
+        </div>
+      );
+    }
 
     return (
-      <>
-        {data.map((e) => (
-          <div>
-            <h1>{e.name}</h1>
-            <p>Set 1: {e.setsLogged[0]}</p>
+      <div style={styles.recapContainer}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <h2 style={{ margin: 0, color: "#00ff88" }}>Session Recap</h2>
+          <button
+            onClick={() => setShowSessionLog(false)}
+            style={styles.closeBtn}
+          >
+            ✕
+          </button>
+        </div>
+
+        <div style={styles.recapScroll}>
+          <div
+            style={{
+              marginBottom: "15px",
+              borderBottom: "1px solid #333",
+              paddingBottom: "10px",
+            }}
+          >
+            <span style={{ color: "#888" }}>{workout.program}</span> |
+            <span style={{ color: "#00ff88" }}> {workout.duration} mins</span>
           </div>
-        ))}
-      </>
+
+          {workout.exercises.map((ex, idx) => (
+            <div key={idx} style={{ marginBottom: "20px", textAlign: "left" }}>
+              <h3
+                style={{
+                  fontSize: "1.2em",
+                  margin: "0 0 8px 0",
+                  color: "#fff",
+                }}
+              >
+                {ex.name}
+              </h3>
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                {ex.setsLogged.map((val, sIdx) => (
+                  <div key={sIdx} style={styles.recapSetBadge}>
+                    <small
+                      style={{
+                        color: "#888",
+                        display: "block",
+                        fontSize: "10px",
+                      }}
+                    >
+                      SET {sIdx + 1}
+                    </small>
+                    <span style={{ fontSize: "1.1em", fontWeight: "bold" }}>
+                      {val}
+                      {exerciseConfig[ex.name]?.unit === "sec" ? "s" : ""}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     );
   };
 
@@ -792,8 +853,18 @@ function App() {
             <strong style={{ color: "#00ff88" }}>{getNextWorkoutDay()}</strong>
           </div>
 
-          {renderCalendar()}
-          {sessionLog("2026-02-23")}
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              gap: "30px", // space between calendar and recap
+              flexWrap: "wrap",
+            }}
+          >
+            {renderCalendar()}
+            {showSessionLog && renderSessionRecap(sessionLogDate)}
+          </div>
         </div>
       )}
 
@@ -1141,7 +1212,6 @@ const styles = {
     background: "#111",
     padding: "20px",
     borderRadius: "15px",
-    marginTop: "30px",
     width: "100%",
     maxWidth: "400px",
   },
@@ -1215,6 +1285,35 @@ const styles = {
     fontWeight: "bold",
     color: "#fff",
     fontFamily: "monospace",
+  },
+  recapContainer: {
+    background: "#1a1a1a",
+    padding: "25px",
+    borderRadius: "15px",
+    width: "100%",
+    maxWidth: "400px",
+    border: "2px solid #333",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+  },
+  recapScroll: {
+    maxHeight: "400px",
+    overflowY: "auto",
+    paddingRight: "10px",
+  },
+  recapSetBadge: {
+    background: "#222",
+    padding: "8px 12px",
+    borderRadius: "8px",
+    border: "1px solid #444",
+    minWidth: "60px",
+    textAlign: "center",
+  },
+  closeBtn: {
+    background: "none",
+    border: "none",
+    color: "#888",
+    fontSize: "20px",
+    cursor: "pointer",
   },
 };
 
