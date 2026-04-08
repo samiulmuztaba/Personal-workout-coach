@@ -639,7 +639,7 @@ function App() {
             </div>
           ))}
           {monthDays.map((date, i) => {
-            const dateFormat = `${viewYear}-${(viewMonth + 1).toString().padStart(2, "0")}-${date.toString().padStart(2, "0")}`;
+            const dateFormat = `${viewYear}-${(viewMonth + 1).toString().padStart(2, "0")}-${date?.toString().padStart(2, "0")}`;
             const isWorkoutDay = date && historyDates.includes(dateFormat);
             const isToday =
               dateFormat == new Date().toISOString().split("T")[0];
