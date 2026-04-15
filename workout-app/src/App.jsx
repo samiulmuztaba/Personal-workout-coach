@@ -279,7 +279,7 @@ const loadInitialData = () => {
       console.error("Failed to parse:", err);
     }
   }
-  return { startDate: "2026-02-23", workoutHistory: [] };
+  return { startDate: new Date().toISOString().split("T")[0], workoutHistory: [] };
 };
 
 function App() {
