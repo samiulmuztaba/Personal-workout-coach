@@ -279,7 +279,10 @@ const loadInitialData = () => {
       console.error("Failed to parse:", err);
     }
   }
-  return { startDate: new Date().toISOString().split("T")[0], workoutHistory: [] };
+  return {
+    startDate: new Date().toISOString().split("T")[0],
+    workoutHistory: [],
+  };
 };
 
 function App() {
@@ -327,9 +330,11 @@ function App() {
         curr.exercises?.reduce((sum, ex) => sum + ex.setsLogged.length, 0) || 0,
     0,
   );
-  const completionRate = Math.round(
-    (workoutHistory.length / (currentWeek() * 3)) * 100,
-  );
+  const completionRate = workoutHistory.length > 0
+      ? Math.round(
+    (workoutHistory.length / (currentWeek() * 3)) * 100
+      
+  ) + "%": "Not started yet";
 
   // return today's date as '2026-03-07'
   function getTodayDate() {
@@ -806,7 +811,7 @@ function App() {
             </div>
             <div style={styles.statItem}>
               <span style={styles.statLabel}>RELIABILITY</span>
-              <span style={styles.statValue}>{completionRate}%</span>
+              <span style={styles.statValue}>{completionRate}</span>
             </div>
           </div>
 
@@ -1226,7 +1231,7 @@ const styles = {
     gridTemplateColumns: "repeat(7, 1fr)",
     gap: "8px",
     textAlign: "center",
-    marginTop: '16px'
+    marginTop: "16px",
   },
   dayHeader: {
     color: "#555",
@@ -1326,7 +1331,7 @@ const styles = {
     background: "#111", // Dark card background
     padding: "30px 20px",
     borderRadius: "20px",
-    width: "280px", 
+    width: "280px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -1378,7 +1383,7 @@ const styles = {
     fontSize: "1.2rem",
     fontWeight: "800",
     cursor: "pointer",
-    marginTop: "10px", 
+    marginTop: "10px",
   },
 };
 
