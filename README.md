@@ -20,6 +20,12 @@ This project is a React workout coach app designed to automate a personal 12-wee
 - Tracks reps/seconds, which can be viewed in the history
 - Includes a calendar for viewing history, allowing you to see session details by clicking on a date, helping you keep track of your workouts.
 
+# Screenshots
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-3.png)
+![alt text](image-4.png)
 ## Tech Stack
 - React
 - Vite
