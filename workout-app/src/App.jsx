@@ -221,7 +221,7 @@ const COOLDOWNS = {
 };
 
 const WORKOUT_DAYS = {
-  "Weeks 1-4": ["Monday", "Thursday", "Wednesday", "Friday"],
+  "Weeks 1-4": ["Monday", "Wednesday", "Friday"],
   "Weeks 5-8": ["Monday", "Wednesday", "Friday"],
   "Weeks 9-12": ["Monday", "Wednesday", "Thursday", "Friday"],
 };
@@ -529,7 +529,6 @@ function App() {
     setScreen("exercise");
   };
 
-  let reps = []
   const exercises = getCurrentExercises();
   const completeSet = () => {
     const ex = exercises[currentExercise];
@@ -541,8 +540,6 @@ function App() {
       setTimer(ex.rest);
       setScreen("rest");
       setLoggedReps(loggedReps < exerciseConfig[ex.name].min ? exerciseConfig[ex.name].min : loggedReps);
-      reps.push(loggedReps < exerciseConfig[ex.name].min ? exerciseConfig[ex.name].min : loggedReps)
-      console.log(reps)
     } else {
       setScreen("exerciseDone");
     }
