@@ -221,7 +221,7 @@ const COOLDOWNS = {
 };
 
 const WORKOUT_DAYS = {
-  "Weeks 1-4": ["Monday", "Wednesday", "Friday"],
+  "Weeks 1-4": ["Monday", "Thursday", "Wednesday", "Friday"],
   "Weeks 5-8": ["Monday", "Wednesday", "Friday"],
   "Weeks 9-12": ["Monday", "Wednesday", "Thursday", "Friday"],
 };
@@ -284,6 +284,39 @@ const loadInitialData = () => {
     workoutHistory: [],
   };
 };
+
+const exerciseConfig = {
+    // --- REPS-BASED EXERCISES ---
+    // Phase: Weeks 1-4
+    "PUSH-UPS": { unit: "reps", min: 5, max: 8 },
+    SQUATS: { unit: "reps", min: 10, max: 12 },
+    "INVERTED ROWS": { unit: "reps", min: 5, max: 8 },
+    "GLUTE BRIDGES": { unit: "reps", min: 12, max: 15 },
+    "WALL SLIDES": { unit: "reps", min: 10, max: 10 },
+
+    // Phase: Weeks 5-8
+    "GOBLET SQUATS": { unit: "reps", min: 10, max: 12, weight: "2-5kg" },
+    "SINGLE-LEG GLUTES BRIDGES": { unit: "reps", min: 8, max: 10 },
+
+    // Phase: Weeks 9-12
+    "PUSH-UPS (tempo 3-0-1)": { unit: "reps", min: 10, max: 15 },
+    "PIKE PUSH-UPS": { unit: "reps", min: 6, max: 10 },
+    "BULGARIAN SPLIT SQUATS": { unit: "reps", min: 8, max: 10, perSide: true },
+    "LOADED SQUATS": { unit: "reps", min: 12, max: 15, weight: "5-8kg" },
+    "CALF RAISES": { unit: "reps", min: 15, max: 20 },
+    "PLANK TO DOWN-DOG": { unit: "reps", min: 10, max: 10 },
+    "BACKPACK ROWS": { unit: "reps", min: 12, max: 15, weight: "5-8kg" },
+    "REVERSE SNOW ANGELS": { unit: "reps", min: 12, max: 15 },
+    "SINGLE-LEG RDLs": { unit: "reps", min: 8, max: 10, perSide: true },
+    "BICYCLE CRUNCHES": { unit: "reps", min: 20, max: 30 },
+    "BIRD DOGS": { unit: "reps", min: 10, max: 10, perSide: true },
+
+    // --- TIME-BASED EXERCISES (Seconds) ---
+    PLANK: { unit: "sec", min: 60, max: 75 },
+    "SIDE PLANK": { unit: "sec", min: 20, max: 30, perSide: true },
+    "SUPERMAN HOLDS": { unit: "sec", min: 15, max: 20 },
+    "DEAD HANGS": { unit: "sec", min: 20, max: 45 },
+  };
 
 function App() {
   const initialData = loadInitialData();
@@ -496,6 +529,7 @@ function App() {
     setScreen("exercise");
   };
 
+  let reps = []
   const exercises = getCurrentExercises();
   const completeSet = () => {
     const ex = exercises[currentExercise];
@@ -506,7 +540,9 @@ function App() {
     if (currentSet < ex.sets - 1) {
       setTimer(ex.rest);
       setScreen("rest");
-      setLoggedReps(0);
+      setLoggedReps(loggedReps < exerciseConfig[ex.name].min ? exerciseConfig[ex.name].min : loggedReps);
+      reps.push(loggedReps < exerciseConfig[ex.name].min ? exerciseConfig[ex.name].min : loggedReps)
+      console.log(reps)
     } else {
       setScreen("exerciseDone");
     }
@@ -758,38 +794,7 @@ function App() {
     );
   };
 
-  const exerciseConfig = {
-    // --- REPS-BASED EXERCISES ---
-    // Phase: Weeks 1-4
-    "PUSH-UPS": { unit: "reps", min: 5, max: 8 },
-    SQUATS: { unit: "reps", min: 10, max: 12 },
-    "INVERTED ROWS": { unit: "reps", min: 5, max: 8 },
-    "GLUTE BRIDGES": { unit: "reps", min: 12, max: 15 },
-    "WALL SLIDES": { unit: "reps", min: 10, max: 10 },
-
-    // Phase: Weeks 5-8
-    "GOBLET SQUATS": { unit: "reps", min: 10, max: 12, weight: "2-5kg" },
-    "SINGLE-LEG GLUTES BRIDGES": { unit: "reps", min: 8, max: 10 },
-
-    // Phase: Weeks 9-12
-    "PUSH-UPS (tempo 3-0-1)": { unit: "reps", min: 10, max: 15 },
-    "PIKE PUSH-UPS": { unit: "reps", min: 6, max: 10 },
-    "BULGARIAN SPLIT SQUATS": { unit: "reps", min: 8, max: 10, perSide: true },
-    "LOADED SQUATS": { unit: "reps", min: 12, max: 15, weight: "5-8kg" },
-    "CALF RAISES": { unit: "reps", min: 15, max: 20 },
-    "PLANK TO DOWN-DOG": { unit: "reps", min: 10, max: 10 },
-    "BACKPACK ROWS": { unit: "reps", min: 12, max: 15, weight: "5-8kg" },
-    "REVERSE SNOW ANGELS": { unit: "reps", min: 12, max: 15 },
-    "SINGLE-LEG RDLs": { unit: "reps", min: 8, max: 10, perSide: true },
-    "BICYCLE CRUNCHES": { unit: "reps", min: 20, max: 30 },
-    "BIRD DOGS": { unit: "reps", min: 10, max: 10, perSide: true },
-
-    // --- TIME-BASED EXERCISES (Seconds) ---
-    PLANK: { unit: "sec", min: 60, max: 75 },
-    "SIDE PLANK": { unit: "sec", min: 20, max: 30, perSide: true },
-    "SUPERMAN HOLDS": { unit: "sec", min: 15, max: 20 },
-    "DEAD HANGS": { unit: "sec", min: 20, max: 45 },
-  };
+  
 
   return (
     <div style={styles.app}>
@@ -953,6 +958,11 @@ function App() {
                 {loggedReps > 0
                   ? loggedReps
                   : exerciseConfig[exercises[currentExercise].name].min}
+                {
+                  
+                
+                (loggedReps < exerciseConfig[exercises[currentExercise].name].min) && setLoggedReps(exerciseConfig[exercises[currentExercise].name].min)
+                }
               </div>
 
               <div style={styles.sliderContainer}>
