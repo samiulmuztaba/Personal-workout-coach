@@ -44,6 +44,12 @@ This project is a React workout coach app designed to automate a personal 12-wee
    ```
 4. Open the app in your browser using the Vite URL displayed in the terminal.
 
+## Note for Testing/Reviewing
+
+This app is designed with specific workout days calculated from your start date. If your `localStorage` is empty, you will see a message prompting you to begin your workout. If you start your workout on a particular day and there is a history of workouts for that day, the following day—or on any other designated day—you may see a message indicating that it is a recovery day, preventing you from exercising. 
+
+If you want to reset this and check the app again, you will need to run `localStorage.clear()` in your browser's console and then reload the website.
+
 ## Future Improvements
 - Introduce an adaptive algorithm for tracking reps/seconds, removing hardcoding. This system will be based on user performance, allowing exercises to change dynamically instead of phase-wise.
 - Implement exercise continuation: currently, if you leave the exercise screen, your progress isn't saved. In the next version, progress will be saved, possibly by introducing a picture-in-picture mode or a "Continue Exercise" section on the homepage.
