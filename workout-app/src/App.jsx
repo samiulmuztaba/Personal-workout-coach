@@ -220,12 +220,6 @@ const COOLDOWNS = {
   ],
 };
 
-const WORKOUT_DAYS = {
-  "Weeks 1-4": ["Monday", "Wednesday", "Friday"],
-  "Weeks 5-8": ["Monday", "Wednesday", "Friday"],
-  "Weeks 9-12": ["Monday", "Wednesday", "Thursday", "Friday"],
-};
-
 // ------------------ HELPER STUFF! -------------------------
 function CancelCross() {
   return (
@@ -286,37 +280,47 @@ const loadInitialData = () => {
 };
 
 const exerciseConfig = {
-    // --- REPS-BASED EXERCISES ---
-    // Phase: Weeks 1-4
-    "PUSH-UPS": { unit: "reps", min: 5, max: 8 },
-    SQUATS: { unit: "reps", min: 10, max: 12 },
-    "INVERTED ROWS": { unit: "reps", min: 5, max: 8 },
-    "GLUTE BRIDGES": { unit: "reps", min: 12, max: 15 },
-    "WALL SLIDES": { unit: "reps", min: 10, max: 10 },
+  // --- REPS-BASED EXERCISES ---
+  // Phase: Weeks 1-4
+  "PUSH-UPS": { unit: "reps", min: 5, max: 8 },
+  SQUATS: { unit: "reps", min: 10, max: 12 },
+  "INVERTED ROWS": { unit: "reps", min: 5, max: 8 },
+  "GLUTE BRIDGES": { unit: "reps", min: 12, max: 15 },
+  "WALL SLIDES": { unit: "reps", min: 10, max: 10 },
 
-    // Phase: Weeks 5-8
-    "GOBLET SQUATS": { unit: "reps", min: 10, max: 12, weight: "2-5kg" },
-    "SINGLE-LEG GLUTES BRIDGES": { unit: "reps", min: 8, max: 10 },
+  // Phase: Weeks 5-8
+  "GOBLET SQUATS": { unit: "reps", min: 10, max: 12, weight: "2-5kg" },
+  "SINGLE-LEG GLUTES BRIDGES": { unit: "reps", min: 8, max: 10 },
 
-    // Phase: Weeks 9-12
-    "PUSH-UPS (tempo 3-0-1)": { unit: "reps", min: 10, max: 15 },
-    "PIKE PUSH-UPS": { unit: "reps", min: 6, max: 10 },
-    "BULGARIAN SPLIT SQUATS": { unit: "reps", min: 8, max: 10, perSide: true },
-    "LOADED SQUATS": { unit: "reps", min: 12, max: 15, weight: "5-8kg" },
-    "CALF RAISES": { unit: "reps", min: 15, max: 20 },
-    "PLANK TO DOWN-DOG": { unit: "reps", min: 10, max: 10 },
-    "BACKPACK ROWS": { unit: "reps", min: 12, max: 15, weight: "5-8kg" },
-    "REVERSE SNOW ANGELS": { unit: "reps", min: 12, max: 15 },
-    "SINGLE-LEG RDLs": { unit: "reps", min: 8, max: 10, perSide: true },
-    "BICYCLE CRUNCHES": { unit: "reps", min: 20, max: 30 },
-    "BIRD DOGS": { unit: "reps", min: 10, max: 10, perSide: true },
+  // Phase: Weeks 9-12
+  "PUSH-UPS (tempo 3-0-1)": { unit: "reps", min: 10, max: 15 },
+  "PIKE PUSH-UPS": { unit: "reps", min: 6, max: 10 },
+  "BULGARIAN SPLIT SQUATS": { unit: "reps", min: 8, max: 10, perSide: true },
+  "LOADED SQUATS": { unit: "reps", min: 12, max: 15, weight: "5-8kg" },
+  "CALF RAISES": { unit: "reps", min: 15, max: 20 },
+  "PLANK TO DOWN-DOG": { unit: "reps", min: 10, max: 10 },
+  "BACKPACK ROWS": { unit: "reps", min: 12, max: 15, weight: "5-8kg" },
+  "REVERSE SNOW ANGELS": { unit: "reps", min: 12, max: 15 },
+  "SINGLE-LEG RDLs": { unit: "reps", min: 8, max: 10, perSide: true },
+  "BICYCLE CRUNCHES": { unit: "reps", min: 20, max: 30 },
+  "BIRD DOGS": { unit: "reps", min: 10, max: 10, perSide: true },
 
-    // --- TIME-BASED EXERCISES (Seconds) ---
-    PLANK: { unit: "sec", min: 60, max: 75 },
-    "SIDE PLANK": { unit: "sec", min: 20, max: 30, perSide: true },
-    "SUPERMAN HOLDS": { unit: "sec", min: 15, max: 20 },
-    "DEAD HANGS": { unit: "sec", min: 20, max: 45 },
-  };
+  // --- TIME-BASED EXERCISES (Seconds) ---
+  PLANK: { unit: "sec", min: 60, max: 75 },
+  "SIDE PLANK": { unit: "sec", min: 20, max: 30, perSide: true },
+  "SUPERMAN HOLDS": { unit: "sec", min: 15, max: 20 },
+  "DEAD HANGS": { unit: "sec", min: 20, max: 45 },
+};
+
+const daysOfWeek = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 function App() {
   const initialData = loadInitialData();
@@ -363,11 +367,10 @@ function App() {
         curr.exercises?.reduce((sum, ex) => sum + ex.setsLogged.length, 0) || 0,
     0,
   );
-  const completionRate = workoutHistory.length > 0
-      ? Math.round(
-    (workoutHistory.length / (currentWeek() * 3)) * 100
-      
-  ) + "%": "Not started yet";
+  const completionRate =
+    workoutHistory.length > 0
+      ? Math.round((workoutHistory.length / (currentWeek() * 3)) * 100) + "%"
+      : "Not started yet";
 
   // return today's date as '2026-03-07'
   function getTodayDate() {
@@ -381,16 +384,6 @@ function App() {
     else return "Weeks 9-12";
   };
 
-  const daysOfWeek = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-
   function getToday() {
     const today = new Date();
     const dayOfWeekName = daysOfWeek[today.getDay()];
@@ -401,18 +394,42 @@ function App() {
   const today = getToday();
   const weekType = currentWeekSubType();
 
+  const hasStarted = workoutHistory.length > 0;
+
+  const next_days_in_order = (day) => [
+    ...daysOfWeek.slice(daysOfWeek.indexOf(day), 7),
+    ...daysOfWeek.slice(0, daysOfWeek.indexOf(day)),
+  ];
+
+  console.log(next_days_in_order("Monday"));
+
+  function WorkoutDaysCalc(startDay, adv) {
+    const wd = [
+      startDay,
+      next_days_in_order(startDay)[2],
+      next_days_in_order(startDay)[4],
+    ];
+    const wd_adv = [...wd, next_days_in_order(startDay)[5]];
+    return adv ? wd_adv : wd;
+  }
+
+  console.log(WorkoutDaysCalc("Monday", true));
+
+  const WORKOUT_DAYS = {
+    "Weeks 1-4": ["Monday", "Wednesday", "Friday"],
+    "Weeks 5-8": ["Monday", "Wednesday", "Friday"],
+    "Weeks 9-12": ["Monday", "Wednesday", "Thursday", "Friday"],
+  };
+
   function getNextWorkoutDay() {
     // this logic is proudly written by meee 😤
     const workout_days = WORKOUT_DAYS[weekType];
-    const next_days_in_order = [
-      ...daysOfWeek.slice(daysOfWeek.indexOf(today), 7),
-      ...daysOfWeek.slice(0, daysOfWeek.indexOf(today)),
-    ];
 
-    return next_days_in_order.filter((d) => workout_days.includes(d))[0] ===
-      today
-      ? next_days_in_order.filter((d) => workout_days.includes(d))[1]
-      : next_days_in_order.filter((d) => workout_days.includes(d))[0];
+    return next_days_in_order(today).filter((d) =>
+      workout_days.includes(d),
+    )[0] === today
+      ? next_days_in_order(today).filter((d) => workout_days.includes(d))[1]
+      : next_days_in_order(today).filter((d) => workout_days.includes(d))[0];
   }
 
   function getCurrentExercises() {
@@ -539,7 +556,11 @@ function App() {
     if (currentSet < ex.sets - 1) {
       setTimer(ex.rest);
       setScreen("rest");
-      setLoggedReps(loggedReps < exerciseConfig[ex.name].min ? exerciseConfig[ex.name].min : loggedReps);
+      setLoggedReps(
+        loggedReps < exerciseConfig[ex.name].min
+          ? exerciseConfig[ex.name].min
+          : loggedReps,
+      );
     } else {
       setScreen("exerciseDone");
     }
@@ -791,8 +812,6 @@ function App() {
     );
   };
 
-  
-
   return (
     <div style={styles.app}>
       {/* Render based on screen state */}
@@ -817,48 +836,59 @@ function App() {
             </div>
           </div>
 
-          {haveTrainingToday && (
-            <div
-              style={{
-                background: "#00ff88",
-                color: "#000",
-                padding: "20px 40px",
-                borderRadius: "15px",
-                margin: "20px 0",
-                fontWeight: "700",
-                fontSize: "1.5em",
-              }}
-            >
-              {!workoutDoneToday
-                ? "⚠️ TIME TO TRAIN TODAY!"
-                : "💪 YOU HAVE DONE TODAY'S WORKOUT!"}
-            </div>
-          )}
+          {hasStarted ? (
+            <>
+              {haveTrainingToday && (
+                <div
+                  style={{
+                    background: "#00ff88",
+                    color: "#000",
+                    padding: "20px 40px",
+                    borderRadius: "15px",
+                    margin: "20px 0",
+                    fontWeight: "700",
+                    fontSize: "1.5em",
+                  }}
+                >
+                  {!workoutDoneToday
+                    ? "⚠️ TIME TO TRAIN TODAY!"
+                    : "💪 YOU HAVE DONE TODAY'S WORKOUT!"}
+                </div>
+              )}
 
-          {haveTrainingToday && !workoutDoneToday && (
+              {haveTrainingToday && !workoutDoneToday && (
+                <button style={styles.btn} onClick={() => setScreen("start")}>
+                  🔥 START TODAY'S WORKOUT
+                </button>
+              )}
+
+              {!haveTrainingToday && (
+                <div
+                  style={{
+                    background: "#333",
+                    padding: "20px 40px",
+                    borderRadius: "15px",
+                    margin: "20px 0",
+                    fontSize: "1.3em",
+                  }}
+                >
+                  😌 Rest Day - Recover and eat well!
+                </div>
+              )}
+              <div style={styles.info}>
+                Next workout:{" "}
+                <strong style={{ color: "#00ff88" }}>
+                  {getNextWorkoutDay()}
+                </strong>
+              </div>
+            </>
+          ) : (
+            <><h2>You haven't started yet! You can start from today.</h2>
             <button style={styles.btn} onClick={() => setScreen("start")}>
-              🔥 START TODAY'S WORKOUT
-            </button>
+                  🔥 START BY DOING TODAY'S WORKOUT
+                </button>
+            </>
           )}
-
-          {!haveTrainingToday && (
-            <div
-              style={{
-                background: "#333",
-                padding: "20px 40px",
-                borderRadius: "15px",
-                margin: "20px 0",
-                fontSize: "1.3em",
-              }}
-            >
-              😌 Rest Day - Recover and eat well!
-            </div>
-          )}
-
-          <div style={styles.info}>
-            Next workout:{" "}
-            <strong style={{ color: "#00ff88" }}>{getNextWorkoutDay()}</strong>
-          </div>
 
           <div
             style={{
@@ -867,6 +897,8 @@ function App() {
               justifyContent: "center",
               gap: "30px", // space between calendar and recap
               flexWrap: "wrap",
+              marginTop: hasStarted ? 0 : "30px",
+              opacity: hasStarted ? 1 : 0.5
             }}
           >
             {renderCalendar()}
@@ -955,11 +987,11 @@ function App() {
                 {loggedReps > 0
                   ? loggedReps
                   : exerciseConfig[exercises[currentExercise].name].min}
-                {
-                  
-                
-                (loggedReps < exerciseConfig[exercises[currentExercise].name].min) && setLoggedReps(exerciseConfig[exercises[currentExercise].name].min)
-                }
+                {loggedReps <
+                  exerciseConfig[exercises[currentExercise].name].min &&
+                  setLoggedReps(
+                    exerciseConfig[exercises[currentExercise].name].min,
+                  )}
               </div>
 
               <div style={styles.sliderContainer}>
