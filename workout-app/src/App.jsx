@@ -416,7 +416,7 @@ function App() {
   console.log(WorkoutDaysCalc("Monday", true));
 
   const WORKOUT_DAYS = {
-    "Weeks 1-4": ["Monday", "Wednesday", "Friday"],
+    "Weeks 1-4": ["Sunday", "Tuesday", "Thursday"],
     "Weeks 5-8": ["Monday", "Wednesday", "Friday"],
     "Weeks 9-12": ["Monday", "Wednesday", "Thursday", "Friday"],
   };
