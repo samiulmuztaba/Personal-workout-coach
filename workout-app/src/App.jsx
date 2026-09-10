@@ -417,7 +417,7 @@ function App() {
 
   const WORKOUT_DAYS = {
     "Weeks 1-4": ["Sunday", "Tuesday", "Thursday"],
-    "Weeks 5-8": ["Monday", "Wednesday", "Friday"],
+    "Weeks 5-8": ["Sunday", "Tuesday", "Thrusday"],
     "Weeks 9-12": ["Monday", "Wednesday", "Thursday", "Friday"],
   };
 
